@@ -1,9 +1,16 @@
-import React from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase/firebase";
+
 const Login = () => {
-  return (
-    <div>
-      <p>Home</p>
-    </div>
-  );
+  const handleLogin = async () => {
+    await signInWithEmailAndPassword(
+      auth,
+      "test@example.com",
+      "Password123!"
+    );
+  };
+
+  return <button onClick={handleLogin}>Login</button>;
 };
+
 export default Login;
