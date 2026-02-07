@@ -7,7 +7,7 @@
 // );
 
 // export default Home;
-import { auth } from "../firebase"; // adjust path
+import { auth } from "../firebase/firebase"; // adjust path
 
 function GetToken() {
   const getToken = async () => {
