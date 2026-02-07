@@ -10,7 +10,7 @@
 import { auth } from "../firebase/firebase"; // adjust path
 
 function GetToken() {
-  const getToken = async () => {
+  const getToken = async () => {ghj
     if (!auth.currentUser) {
       console.log("No user logged in");
       return;
