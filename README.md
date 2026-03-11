@@ -178,7 +178,7 @@ VITE_FIREBASE_APP_ID=your_firebase_app_id
 VITE_API_URL=http://localhost:8000/api
 ```
 
-> **Never commit `.env.local`** — it is excluded by `.gitignore` by default.
+
 
 ### Running the App
 
