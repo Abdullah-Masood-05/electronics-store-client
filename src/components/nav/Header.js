@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+
 import { Layout, Menu, Button, Dropdown, Avatar, Space, Typography } from "antd";
 import {
   UserOutlined,
@@ -8,7 +9,8 @@ import {
   LoginOutlined,
   UserAddOutlined,
 } from "@ant-design/icons";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import useAuth from "../../hooks/useAuth";
 
 const { Header: AntHeader } = Layout;
@@ -16,12 +18,12 @@ const { Text } = Typography;
 
 const Header = () => {
   const { isAuthenticated, backendUser, logout, loading } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const handleLogout = async () => {
     await logout();
-    navigate("/login", { replace: true });
+    router.replace("/login");
   };
 
   // User dropdown menu items
@@ -52,27 +54,25 @@ const Header = () => {
   // Nav menu items
   const navItems = isAuthenticated
     ? [
-      {
-        key: "/",
-        icon: <HomeOutlined />,
-        label: <Link to="/">Home</Link>,
-      },
-      {
-        key: "/products",
-        icon: <ShoppingOutlined />,
-        label: "Products",
-        disabled: true,
-      },
-    ]
+        {
+          key: "/",
+          icon: <HomeOutlined />,
+          label: <Link href="/">Home</Link>,
+        },
+        {
+          key: "/products",
+          icon: <ShoppingOutlined />,
+          label: "Products",
+          disabled: true,
+        },
+      ]
     : [];
-
-  const selectedKey = location.pathname;
 
   return (
     <AntHeader className="app-header">
       <div className="header-content">
         {/* Logo */}
-        <Link to="/" className="header-logo">
+        <Link href="/" className="header-logo">
           <span className="logo-icon">⚡</span>
           <span className="logo-text">ElectroStore</span>
         </Link>
@@ -82,7 +82,7 @@ const Header = () => {
           <Menu
             theme="dark"
             mode="horizontal"
-            selectedKeys={[selectedKey]}
+            selectedKeys={[pathname]}
             items={navItems}
             className="header-nav"
             style={{ flex: 1, minWidth: 0, background: "transparent", borderBottom: "none" }}
@@ -110,7 +110,7 @@ const Header = () => {
             </Dropdown>
           ) : (
             <Space>
-              <Link to="/login">
+              <Link href="/login">
                 <Button
                   type="text"
                   icon={<LoginOutlined />}
@@ -120,7 +120,7 @@ const Header = () => {
                   Sign In
                 </Button>
               </Link>
-              <Link to="/register">
+              <Link href="/register">
                 <Button
                   type="primary"
                   icon={<UserAddOutlined />}

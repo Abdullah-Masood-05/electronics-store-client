@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+
 import { Typography, Card, Row, Col, Tag, Avatar, Statistic } from "antd";
 import {
   UserOutlined,
@@ -8,18 +9,19 @@ import {
   CalendarOutlined,
 } from "@ant-design/icons";
 import useAuth from "../hooks/useAuth";
+import AuthGuard from "../components/AuthGuard";
 
 const { Title, Text } = Typography;
 
-const Home = () => {
+function HomeContent() {
   const { backendUser, firebaseUser } = useAuth();
 
   const memberSince = backendUser?.createdAt
     ? new Date(backendUser.createdAt).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
     : "N/A";
 
   return (
@@ -31,7 +33,7 @@ const Home = () => {
             Welcome, {backendUser?.name || "User"} 👋
           </Title>
           <Text className="welcome-subtitle">
-            Here's your ElectroStore dashboard
+            Here&apos;s your ElectroStore dashboard
           </Text>
         </div>
 
@@ -106,6 +108,12 @@ const Home = () => {
       </div>
     </div>
   );
-};
+}
 
-export default Home;
+export default function HomePage() {
+  return (
+    <AuthGuard>
+      <HomeContent />
+    </AuthGuard>
+  );
+}
