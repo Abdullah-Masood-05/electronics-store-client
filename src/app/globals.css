@@ -310,6 +310,36 @@ body {
   margin: 20px 0 !important;
 }
 
+/* Role Selector */
+.auth-role-selector {
+  width: 100%;
+  display: flex !important;
+}
+
+.auth-role-selector .ant-radio-button-wrapper {
+  flex: 1;
+  text-align: center;
+  height: 44px !important;
+  line-height: 42px !important;
+  font-weight: 500;
+  background: var(--bg-input) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-secondary) !important;
+  transition: all 0.3s ease;
+}
+
+.auth-role-selector .ant-radio-button-wrapper:hover {
+  color: var(--text-primary) !important;
+  border-color: var(--border-color-hover) !important;
+}
+
+.auth-role-selector .ant-radio-button-wrapper-checked {
+  background: linear-gradient(135deg, var(--accent-primary), #8b5cf6) !important;
+  border-color: var(--accent-primary) !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px var(--accent-glow) !important;
+}
+
 .auth-card .ant-divider-inner-text {
   color: var(--text-muted) !important;
 }

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Form, Input, Button, Typography, Card, Divider, App } from "antd";
-import { MailOutlined, LockOutlined, UserOutlined, GoogleOutlined } from "@ant-design/icons";
+import { Form, Input, Button, Typography, Card, Divider, App, Radio } from "antd";
+import { MailOutlined, LockOutlined, UserOutlined, GoogleOutlined, CrownOutlined, ShoppingOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import useAuth from "../../hooks/useAuth";
@@ -30,7 +30,7 @@ export default function RegisterPage() {
   const onFinish = async (values) => {
     setSubmitting(true);
     try {
-      await register(values.email, values.password, values.name);
+      await register(values.email, values.password, values.name, values.role);
       message.success("Account created successfully!");
       message.info("Verification email sent — please check your inbox.");
       router.replace("/");
@@ -101,6 +101,7 @@ export default function RegisterPage() {
             autoComplete="off"
             size="large"
             requiredMark={false}
+            initialValues={{ role: "user" }}
           >
             <Form.Item
               name="name"
@@ -114,6 +115,28 @@ export default function RegisterPage() {
                 placeholder="Full name"
                 id="register-name"
               />
+            </Form.Item>
+
+            <Form.Item
+              name="role"
+              label={<Text style={{ color: "var(--text-secondary)" }}>I am signing up as</Text>}
+              rules={[{ required: true, message: "Please select a role" }]}
+            >
+              <Radio.Group
+                id="register-role"
+                className="auth-role-selector"
+                optionType="button"
+                buttonStyle="solid"
+                size="large"
+                block
+              >
+                <Radio.Button value="user">
+                  <ShoppingOutlined /> Customer
+                </Radio.Button>
+                <Radio.Button value="admin">
+                  <CrownOutlined /> Admin
+                </Radio.Button>
+              </Radio.Group>
             </Form.Item>
 
             <Form.Item

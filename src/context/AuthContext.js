@@ -120,7 +120,7 @@ export const AuthProvider = ({ children }) => {
    * Register with email and password.
    * Automatically sends email verification.
    */
-  const register = async (email, password, name) => {
+  const register = async (email, password, name, role) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const idToken = await userCredential.user.getIdToken();
 
@@ -128,7 +128,7 @@ export const AuthProvider = ({ children }) => {
     setToken(idToken);
     setAxiosToken(idToken);
 
-    await createOrUpdateUser({ name });
+    await createOrUpdateUser({ name, role });
 
     // Send verification email automatically
     await sendEmailVerification(userCredential.user);
