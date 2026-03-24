@@ -260,6 +260,56 @@ body {
   font-weight: 500;
 }
 
+/* Google Sign-In Button */
+.auth-google-btn {
+  height: 48px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  border-radius: var(--radius-sm) !important;
+  background: #ffffff !important;
+  color: #3c4043 !important;
+  border: 1px solid #dadce0 !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+.auth-google-btn:hover:not(:disabled) {
+  background: #f8f9fa !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  border-color: #c6c6c6 !important;
+}
+
+.auth-google-btn:active:not(:disabled) {
+  background: #f1f3f4 !important;
+}
+
+.auth-google-btn .anticon {
+  color: #4285f4 !important;
+  font-size: 18px !important;
+}
+
+/* Forgot Password Link */
+.auth-forgot-link {
+  text-align: right;
+  margin-top: -12px;
+  margin-bottom: 16px;
+}
+
+.auth-forgot-link .ant-btn-link {
+  color: var(--text-muted) !important;
+  font-size: 13px;
+  padding: 0;
+}
+
+.auth-forgot-link .ant-btn-link:hover {
+  color: var(--accent-primary) !important;
+}
+
+/* Social Login Divider */
+.auth-divider-or {
+  margin: 20px 0 !important;
+}
+
 .auth-card .ant-divider-inner-text {
   color: var(--text-muted) !important;
 }

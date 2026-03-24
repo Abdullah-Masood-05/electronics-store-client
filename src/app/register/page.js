@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { Form, Input, Button, Typography, message, Card, Divider } from "antd";
-import { MailOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
+import { useState, useEffect } from "react";
+import { Form, Input, Button, Typography, Card, Divider, App } from "antd";
+import { MailOutlined, LockOutlined, UserOutlined, GoogleOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import useAuth from "../../hooks/useAuth";
@@ -11,12 +11,19 @@ const { Title, Text } = Typography;
 
 export default function RegisterPage() {
   const [submitting, setSubmitting] = useState(false);
-  const { register, isAuthenticated, loading } = useAuth();
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const { register, loginWithGoogle, isAuthenticated, loading } = useAuth();
   const router = useRouter();
+  const { message } = App.useApp();
 
-  // If already authenticated, redirect to home
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      router.replace("/");
+    }
+  }, [loading, isAuthenticated, router]);
+
   if (!loading && isAuthenticated) {
-    router.replace("/");
     return null;
   }
 
@@ -25,6 +32,7 @@ export default function RegisterPage() {
     try {
       await register(values.email, values.password, values.name);
       message.success("Account created successfully!");
+      message.info("Verification email sent — please check your inbox.");
       router.replace("/");
     } catch (err) {
       const errorMsg =
@@ -39,10 +47,25 @@ export default function RegisterPage() {
     }
   };
 
+  const handleGoogleSignUp = async () => {
+    setGoogleLoading(true);
+    try {
+      await loginWithGoogle();
+      message.success("Account created successfully!");
+      router.replace("/");
+    } catch (err) {
+      if (err.code !== "auth/popup-closed-by-user") {
+        message.error(err.message || "Google sign-up failed");
+      }
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
   return (
     <div className="auth-page">
       <div className="auth-container">
-        <Card className="auth-card" bordered={false}>
+        <Card className="auth-card" variant="borderless">
           <div className="auth-header">
             <div className="auth-logo">⚡</div>
             <Title level={2} className="auth-title">
@@ -52,6 +75,24 @@ export default function RegisterPage() {
               Join ElectroStore today
             </Text>
           </div>
+
+          {/* Google Sign-Up */}
+          <Button
+            block
+            size="large"
+            icon={<GoogleOutlined />}
+            onClick={handleGoogleSignUp}
+            loading={googleLoading}
+            disabled={googleLoading || submitting}
+            className="auth-google-btn"
+            id="google-signup-btn"
+          >
+            Sign up with Google
+          </Button>
+
+          <Divider plain className="auth-divider-or">
+            <Text type="secondary">or sign up with email</Text>
+          </Divider>
 
           <Form
             name="register"
@@ -133,7 +174,7 @@ export default function RegisterPage() {
                 htmlType="submit"
                 block
                 loading={submitting}
-                disabled={submitting}
+                disabled={submitting || googleLoading}
                 className="auth-submit-btn"
                 id="register-submit"
               >

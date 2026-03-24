@@ -1,6 +1,6 @@
 "use client";
 
-import { ConfigProvider, theme, Layout } from "antd";
+import { ConfigProvider, theme, Layout, App } from "antd";
 import { AuthProvider } from "../context/AuthContext";
 import Header from "../components/nav/Header";
 
@@ -20,12 +20,15 @@ const darkTheme = {
 export default function ClientProviders({ children }) {
   return (
     <ConfigProvider theme={darkTheme}>
-      <AuthProvider>
-        <Layout className="app-layout">
-          <Header />
-          <Content className="app-content">{children}</Content>
-        </Layout>
-      </AuthProvider>
+      <App>
+        <AuthProvider>
+          <Layout className="app-layout">
+            <Header />
+            <Content className="app-content">{children}</Content>
+          </Layout>
+        </AuthProvider>
+      </App>
     </ConfigProvider>
   );
 }
+

@@ -40,39 +40,39 @@ function HomeContent() {
         {/* Stats Row */}
         <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
           <Col xs={24} sm={8}>
-            <Card className="stat-card" bordered={false}>
+            <Card className="stat-card" variant="borderless">
               <Statistic
                 title="Cart Items"
                 value={backendUser?.cart?.length || 0}
                 prefix={<ShoppingCartOutlined />}
-                valueStyle={{ color: "var(--accent-primary)" }}
+                styles={{ content: { color: "var(--accent-primary)" } }}
               />
             </Card>
           </Col>
           <Col xs={24} sm={8}>
-            <Card className="stat-card" bordered={false}>
+            <Card className="stat-card" variant="borderless">
               <Statistic
                 title="Wishlist"
                 value={backendUser?.wishlist?.length || 0}
                 prefix={<HeartOutlined />}
-                valueStyle={{ color: "#ff6b6b" }}
+                styles={{ content: { color: "#ff6b6b" } }}
               />
             </Card>
           </Col>
           <Col xs={24} sm={8}>
-            <Card className="stat-card" bordered={false}>
+            <Card className="stat-card" variant="borderless">
               <Statistic
                 title="Account Status"
                 value="Active"
                 prefix={<SafetyCertificateOutlined />}
-                valueStyle={{ color: "#51cf66" }}
+                styles={{ content: { color: "#51cf66" } }}
               />
             </Card>
           </Col>
         </Row>
 
         {/* Profile Card */}
-        <Card className="profile-card" bordered={false}>
+        <Card className="profile-card" variant="borderless">
           <div className="profile-header">
             <Avatar
               size={72}
