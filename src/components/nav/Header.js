@@ -65,6 +65,15 @@ const Header = () => {
           label: "Products",
           disabled: true,
         },
+        ...(backendUser?.role === "admin"
+          ? [
+              {
+                key: "/admin/dashboard",
+                icon: <UserOutlined />,
+                label: <Link href="/admin/dashboard">Admin</Link>,
+              },
+            ]
+          : []),
       ]
     : [];
 
