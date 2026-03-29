@@ -5,11 +5,11 @@
 </p>
 
 <p align="center">
+  <img src="https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js 16" />
   <img src="https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=white" alt="React 19" />
-  <img src="https://img.shields.io/badge/Vite-7-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite 7" />
   <img src="https://img.shields.io/badge/Ant%20Design-6-0170FE?style=flat-square&logo=antdesign&logoColor=white" alt="Ant Design 6" />
   <img src="https://img.shields.io/badge/Firebase-12-FFCA28?style=flat-square&logo=firebase&logoColor=black" alt="Firebase 12" />
-  <img src="https://img.shields.io/badge/React%20Router-7-CA4245?style=flat-square&logo=reactrouter&logoColor=white" alt="React Router 7" />
+  <img src="https://img.shields.io/badge/Axios-1-5A29E4?style=flat-square&logo=axios&logoColor=white" alt="Axios" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT License" />
 </p>
 
@@ -59,14 +59,13 @@ The client uses **Firebase Authentication** for identity management combined wit
 
 | Category | Technology |
 |---|---|
-| UI Framework | [React 19](https://react.dev) |
-| Build Tool | [Vite 7](https://vite.dev) + SWC |
+| Framework | [Next.js 16](https://nextjs.org) |
+| UI Library | [React 19](https://react.dev) |
 | Component Library | [Ant Design 6](https://ant.design) |
-| Routing | [React Router DOM 7](https://reactrouter.com) |
 | Authentication | [Firebase 12](https://firebase.google.com) |
 | HTTP Client | [Axios](https://axios-http.com) |
 | State Management | React Context API |
-| Linting | ESLint 9 |
+| Styling | Next.js with CSS modules |
 
 ---
 
@@ -76,34 +75,53 @@ The client uses **Firebase Authentication** for identity management combined wit
 electronics-store-client/
 ├── public/                     # Static assets
 ├── src/
-│   ├── assets/                 # Images, icons, fonts
+│   ├── app/                    # Next.js App Router (pages)
+│   │   ├── layout.js           # Root layout wrapper
+│   │   ├── page.js             # Home page
+│   │   ├── globals.css         # Global styles
+│   │   ├── providers.js        # Context & provider setup
+│   │   ├── login/
+│   │   │   └── page.js         # Login page
+│   │   ├── register/
+│   │   │   └── page.js         # Registration page
+│   │   ├── forgot-password/
+│   │   │   └── page.js         # Password recovery page
+│   │   └── admin/              # Admin section (protected)
+│   │       ├── layout.js       # Admin layout
+│   │       ├── dashboard/
+│   │       │   └── page.js     # Admin dashboard
+│   │       ├── category/
+│   │       │   └── page.js     # Category management
+│   │       ├── subcategory/
+│   │       │   └── page.js     # Subcategory management
+│   │       └── product/
+│   │           ├── page.js     # Product listing
+│   │           ├── create/     # Product creation page
+│   │           └── [slug]/     # Product detail page
 │   ├── components/
+│   │   ├── AdminGuard.js       # HOC for admin route protection
+│   │   ├── AdminNav.js         # Admin navigation component
+│   │   ├── AuthGuard.js        # HOC for auth route protection
 │   │   └── nav/
-│   │       └── Header.jsx      # Global navigation bar
+│   │       └── Header.js       # Global navigation header
 │   ├── context/
-│   │   └── AuthContext.jsx     # Auth state provider (Firebase + backend)
-│   ├── features/
-│   │   └── auth/
-│   │       ├── Login.jsx       # Login page
-│   │       └── Register.jsx    # Registration page
-│   ├── firebase/
-│   │   └── firebase.js         # Firebase app initialization
+│   │   └── AuthContext.js      # Auth state provider (Firebase + backend)
 │   ├── hooks/
-│   │   └── useAuth.js          # useAuth() convenience hook
+│   │   └── useAuth.js          # useAuth() hook for consuming auth context
 │   ├── lib/
-│   │   └── axios.js            # Axios instance + interceptors
-│   ├── pages/
-│   │   └── Home.jsx            # Authenticated home / dashboard
-│   ├── routes/
-│   │   └── PrivateRoute.jsx    # HOC for protected routes
+│   │   ├── axios.js            # Axios instance with JWT interceptors
+│   │   └── firebase.js         # Firebase app initialization
 │   ├── services/
-│   │   └── auth.service.js     # Backend auth API calls
-│   ├── App.jsx                 # Root component & route definitions
-│   ├── main.jsx                # React entry point
-│   └── index.css               # Global styles & CSS variables
+│   │   ├── auth.service.js     # Backend auth API calls
+│   │   ├── admin.service.js    # Admin API calls
+│   │   ├── category.service.js # Category API calls
+│   │   ├── product.service.js  # Product API calls
+│   │   └── subcategory.service.js # Subcategory API calls
+│   └── utils/
+│       └── imageResize.js      # Image processing utilities
 ├── .env.local                  # Environment variables (not committed)
-├── index.html
-├── vite.config.js
+├── jsconfig.json               # JavaScript configuration
+├── next.config.mjs             # Next.js configuration
 └── package.json
 ```
 
@@ -112,34 +130,46 @@ electronics-store-client/
 ## Architecture
 
 ```
-┌─────────────────────────────────────────┐
-│                 React App                │
-│                                          │
-│  ┌──────────────┐   ┌─────────────────┐ │
-│  │  AuthContext  │   │   Ant Design UI  │ │
-│  │  (Firebase    │   │   Components     │ │
-│  │   + Backend)  │   └─────────────────┘ │
-│  └──────┬───────┘                        │
-│         │                                │
-│  ┌──────▼───────┐   ┌─────────────────┐ │
-│  │  Axios Inst.  │   │  React Router   │ │
-│  │  + JWT        │   │  PrivateRoutes  │ │
-│  │  Interceptors │   └─────────────────┘ │
-│  └──────┬───────┘                        │
-└─────────┼───────────────────────────────┘
-          │
-    ┌─────▼──────┐        ┌──────────────┐
-    │  REST API   │        │   Firebase   │
-    │  Backend    │        │   Auth       │
-    └────────────┘        └──────────────┘
+┌──────────────────────────────────────────┐
+│          Next.js App (App Router)         │
+│                                           │
+│  ┌─────────────────┐  ┌──────────────┐  │
+│  │  AuthContext    │  │  Ant Design  │  │
+│  │  (Firebase Auth │  │  Components  │  │
+│  │   + Custom JWT) │  └──────────────┘  │
+│  └────────┬────────┘                     │
+│           │                              │
+│  ┌────────▼────────┐  ┌──────────────┐  │
+│  │ Axios Instance  │  │   Middleware │  │
+│  │ + Interceptors  │  │   & Guards   │  │
+│  │ (JWT injection) │  └──────────────┘  │
+│  └────────┬────────┘                     │
+└──────────┼────────────────────────────┘
+           │
+      ┌────▼──────┐        ┌──────────────┐
+      │ REST API   │        │   Firebase   │
+      │ Backend    │        │   Auth       │
+      └───────────┘        └──────────────┘
 ```
 
-**Data flow:**
-1. User submits credentials → Firebase verifies identity and returns an ID token
-2. `AuthContext` stores the token in memory and injects it into Axios via `setAxiosToken()`
-3. Every API request automatically attaches `Authorization: Bearer <token>` via the Axios request interceptor
-4. The backend validates the Firebase JWT on each request
-5. On a `401` response, the Axios response interceptor calls the registered `logout` callback, clearing all state
+**Navigation & Routing:**
+- Next.js App Router handles page-based routing via file system (`/app/page.js`, `/app/login/page.js`, etc.)
+- Route protection implemented via `AuthGuard` and `AdminGuard` HOCs wrapping route components
+- Admin routes checked at component render time
+
+**Authentication Flow:**
+1. User submits credentials on `/login` or `/register`
+2. Firebase Authentication verifies identity and returns an ID token
+3. `AuthContext` stores the token in memory and configures Axios interceptors
+4. Every API request automatically attaches `Authorization: Bearer <token>` header
+5. Backend validates the Firebase JWT on each request
+6. On `401` response, Axios response interceptor triggers logout, clearing auth state
+
+**Data Flow:**
+- Components consume auth state via `useAuth()` hook from `AuthContext`
+- API calls made via service layer (`auth.service.js`, `product.service.js`, etc.)
+- Services use the configured Axios instance, which automatically injects the JWT token
+- Token remains in memory only (never persisted to `localStorage` to reduce XSS risk)
 
 ---
 
@@ -169,14 +199,16 @@ Create a `.env.local` file in the project root and populate it with your credent
 
 ```env
 # Firebase configuration
-VITE_FIREBASE_API_KEY=your_firebase_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_APP_ID=your_firebase_app_id
+NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_firebase_app_id
 
 # Backend API base URL
-VITE_API_URL=http://localhost:8000/api
+NEXT_PUBLIC_API_URL=http://localhost:8000/api
 ```
+
+> Note: `NEXT_PUBLIC_*` variables are exposed to the client. Firebase API keys are intentionally public and should not be considered sensitive credentials.
 
 
 
@@ -187,7 +219,9 @@ VITE_API_URL=http://localhost:8000/api
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+The app will automatically reload when you make changes to files in the `src/app` directory.
 
 ---
 
@@ -216,7 +250,7 @@ POST /auth/create-or-update        GET /auth/me
             Redirect to "/"
 ```
 
----
+
 
 ## Security
 
@@ -224,9 +258,9 @@ POST /auth/create-or-update        GET /auth/me
 |---|---|
 | Token storage | In-memory only — never `localStorage` or `sessionStorage` |
 | XSS exposure | Tokens are not accessible via `document.cookie` or `localStorage` |
-| Expired tokens | Global Axios 401 interceptor calls `logout()` automatically |
-| Route protection | `PrivateRoute` redirects unauthenticated users before rendering |
-| Firebase config | All keys loaded from `import.meta.env` — never hard-coded |
+| Expired tokens | Global Axios 401 interceptor automatically logs out the user |
+| Route protection | `AuthGuard` and `AdminGuard` HOCs redirect unauthorized users before rendering |
+| Firebase config | All keys loaded from `process.env.NEXT_PUBLIC_*` — never hard-coded |
 
 ---
 
@@ -234,10 +268,9 @@ POST /auth/create-or-update        GET /auth/me
 
 | Command | Description |
 |---|---|
-| `npm run dev` | Start the Vite development server with HMR |
+| `npm run dev` | Start the Next.js development server on port 3000 |
 | `npm run build` | Build the app for production |
-| `npm run preview` | Preview the production build locally |
-| `npm run lint` | Lint the codebase with ESLint |
+| `npm start` | Start the production server |
 
 ---
 
