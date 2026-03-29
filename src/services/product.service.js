@@ -1,7 +1,7 @@
 import api from "../lib/axios";
 
-export const getProducts = async (page = 1, limit = 10) => {
-  const res = await api.get(`/products?page=${page}&limit=${limit}`);
+export const getProducts = async (page = 1, limit = 10, sort = "newest") => {
+  const res = await api.get(`/products?page=${page}&limit=${limit}&sort=${sort}`);
   return res.data;
 };
 
@@ -27,5 +27,20 @@ export const removeProduct = async (slug) => {
 
 export const getProductCount = async () => {
   const res = await api.get("/products/count");
+  return res.data;
+};
+
+export const getProductsByCategory = async (slug, page = 1, limit = 12) => {
+  const res = await api.get(`/products/category/${slug}?page=${page}&limit=${limit}`);
+  return res.data;
+};
+
+export const getProductsBySubCategory = async (slug, page = 1, limit = 12) => {
+  const res = await api.get(`/products/subcategory/${slug}?page=${page}&limit=${limit}`);
+  return res.data;
+};
+
+export const submitRating = async (productId, star) => {
+  const res = await api.put("/products/rating", { productId, star });
   return res.data;
 };
