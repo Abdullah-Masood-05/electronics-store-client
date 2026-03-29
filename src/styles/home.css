@@ -207,6 +207,13 @@
 }
 
 /* --- Featured Deal Banner --- */
+.deals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
 .featured-deal {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -215,9 +222,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 28px;
   overflow: hidden;
   position: relative;
+  text-decoration: none;
+  transition: all 0.25s;
+  cursor: pointer;
+}
+
+.featured-deal:hover {
+  border-color: var(--border-color-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .featured-deal-badge {
@@ -243,7 +258,13 @@
 .featured-deal-price {
   font-size: 14px;
   color: var(--text-secondary);
-  margin-bottom: 16px;
+  margin-bottom: 12px;
+}
+
+.featured-deal-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
 }
 
 .featured-deal-btn {

@@ -1,11 +1,13 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import useAuth from "../hooks/useAuth";
 import AuthGuard from "../components/AuthGuard";
+import { getActiveDeals } from "../services/deal.service";
 import "../styles/home.css";
 
-/* ── Hardcoded data (Phase 6 placeholder) ── */
+/* ── Hardcoded placeholders ── */
 const categories = [
   { name: "Laptops", icon: "💻", slug: "laptops" },
   { name: "Mobiles", icon: "📱", slug: "mobiles" },
@@ -24,6 +26,13 @@ const trendingProducts = [
 
 function HomeContent() {
   const { backendUser, firebaseUser } = useAuth();
+  const [deals, setDeals] = useState([]);
+
+  useEffect(() => {
+    getActiveDeals()
+      .then((data) => setDeals(data.deals || []))
+      .catch(() => setDeals([]));
+  }, []);
 
   const memberSince = backendUser?.createdAt
     ? new Date(backendUser.createdAt).toLocaleDateString("en-US", {
@@ -34,6 +43,29 @@ function HomeContent() {
     : "N/A";
 
   const getInitial = (name) => name?.charAt(0)?.toUpperCase() || "U";
+
+  /**
+   * Resolve the link for a deal.
+   * If a deal has a linked product, go to its detail page.
+   * Otherwise, go to the deals page.
+   */
+  const getDealLink = (deal) => {
+    if (deal.product?.slug) return `/products/${deal.product.slug}`;
+    return "/deals";
+  };
+
+  /**
+   * Render the deal image — either an emoji string or an <img> URL.
+   */
+  const renderDealImage = (deal) => {
+    if (!deal.image) return <span style={{ fontSize: 64 }}>🏷️</span>;
+    // If it starts with http, render as image
+    if (deal.image.startsWith("http")) {
+      return <img src={deal.image} alt={deal.title} />;
+    }
+    // Otherwise treat as emoji/text
+    return <span style={{ fontSize: 64 }}>{deal.image}</span>;
+  };
 
   return (
     <div className="home-page">
@@ -82,9 +114,7 @@ function HomeContent() {
 
         <div className="stat-card">
           <div className="stat-card-label">Orders Placed</div>
-          <div className="stat-card-value">
-            📦 {0}
-          </div>
+          <div className="stat-card-value">📦 {0}</div>
           <div className="stat-card-hint">No orders yet</div>
         </div>
 
@@ -123,20 +153,39 @@ function HomeContent() {
             ))}
           </div>
 
-          {/* Featured Deal */}
-          <div className="featured-deal">
-            <div>
-              <span className="featured-deal-badge">Featured Deal</span>
-              <h3>MacBook Pro M3</h3>
-              <p className="featured-deal-price">Starting at $1,299</p>
-              <Link href="/products" className="featured-deal-btn">
-                View Deal
-              </Link>
-            </div>
-            <div className="featured-deal-image">
-              <span style={{ fontSize: 64 }}>💻</span>
-            </div>
-          </div>
+          {/* Featured Deals — dynamic from backend */}
+          {deals.length > 0 && (
+            <>
+              <div className="section-header">
+                <h2 className="section-title">Featured Deals</h2>
+                <Link href="/deals" className="section-link">
+                  All deals →
+                </Link>
+              </div>
+              <div className="deals-list">
+                {deals.map((deal) => (
+                  <Link
+                    key={deal._id}
+                    href={getDealLink(deal)}
+                    className="featured-deal"
+                  >
+                    <div>
+                      <span className="featured-deal-badge">Featured Deal</span>
+                      <h3>{deal.title}</h3>
+                      <p className="featured-deal-price">{deal.price}</p>
+                      {deal.description && (
+                        <p className="featured-deal-desc">{deal.description}</p>
+                      )}
+                      <span className="featured-deal-btn">View Deal</span>
+                    </div>
+                    <div className="featured-deal-image">
+                      {renderDealImage(deal)}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </>
+          )}
 
           {/* Trending Products */}
           <div className="section-header">

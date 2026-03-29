@@ -6,6 +6,7 @@ import {
   AppstoreOutlined,
   TagsOutlined,
   ShoppingOutlined,
+  FireOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -30,6 +31,11 @@ const items = [
     key: "/admin/product",
     icon: <ShoppingOutlined />,
     label: <Link href="/admin/product">Products</Link>,
+  },
+  {
+    key: "/admin/deals",
+    icon: <FireOutlined />,
+    label: <Link href="/admin/deals">Deals</Link>,
   },
 ];
 
