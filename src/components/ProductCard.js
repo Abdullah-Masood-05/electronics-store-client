@@ -3,6 +3,7 @@
 import { Card, Typography, Tag } from "antd";
 import { StarFilled } from "@ant-design/icons";
 import Link from "next/link";
+import { trackProductClick } from "../services/product.service";
 import "./ProductCard.css";
 
 const { Text, Title } = Typography;
@@ -17,8 +18,12 @@ const ProductCard = ({ product }) => {
         ).toFixed(1)
       : null;
 
+  const handleClick = () => {
+    trackProductClick(product.slug);
+  };
+
   return (
-    <Link href={`/products/${product.slug}`} className="product-card-link">
+    <Link href={`/products/${product.slug}`} className="product-card-link" onClick={handleClick}>
       <Card
         className="product-card"
         variant="borderless"

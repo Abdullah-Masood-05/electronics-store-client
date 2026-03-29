@@ -44,3 +44,16 @@ export const submitRating = async (productId, star) => {
   const res = await api.put("/products/rating", { productId, star });
   return res.data;
 };
+
+export const getTrendingProducts = async (limit = 6) => {
+  const res = await api.get(`/products/trending?limit=${limit}`);
+  return res.data;
+};
+
+export const trackProductClick = async (slug) => {
+  try {
+    await api.post(`/products/${slug}/click`);
+  } catch {
+    // Fire-and-forget — don't block user navigation
+  }
+};

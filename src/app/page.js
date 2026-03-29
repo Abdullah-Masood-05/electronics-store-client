@@ -2,36 +2,61 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Spin } from "antd";
 import useAuth from "../hooks/useAuth";
 import AuthGuard from "../components/AuthGuard";
 import { getActiveDeals } from "../services/deal.service";
+import { getCategories } from "../services/category.service";
+import { getTrendingProducts, trackProductClick } from "../services/product.service";
 import "../styles/home.css";
 
-/* ── Hardcoded placeholders ── */
-const categories = [
-  { name: "Laptops", icon: "💻", slug: "laptops" },
-  { name: "Mobiles", icon: "📱", slug: "mobiles" },
-  { name: "Audio", icon: "🎧", slug: "audio" },
-  { name: "Wearables", icon: "⌚", slug: "wearables" },
-];
+/* Category icon mapping — emoji fallbacks by name */
+const categoryIcons = {
+  laptops: "💻",
+  mobiles: "📱",
+  phones: "📱",
+  audio: "🎧",
+  wearables: "⌚",
+  gaming: "🎮",
+  monitors: "🖥️",
+  tablets: "📱",
+  accessories: "🔌",
+  cameras: "📷",
+  default: "📦",
+};
 
-const trendingProducts = [
-  { category: "Mobile", icon: "📱", name: "iPhone 16 Pro", price: "$999", slug: "iphone-16-pro" },
-  { category: "Audio", icon: "🎧", name: "Sony WH-1000XM5", price: "$329", slug: "sony-wh-1000xm5" },
-  { category: "Wearable", icon: "⌚", name: "Apple Watch S9", price: "$399", slug: "apple-watch-s9" },
-  { category: "Laptop", icon: "💻", name: "Dell XPS 15", price: "$1,499", slug: "dell-xps-15" },
-  { category: "Monitor", icon: "🖥️", name: 'LG 27" 4K', price: "$699", slug: "lg-27-4k" },
-  { category: "Gaming", icon: "🎮", name: "PS5 Controller", price: "$69", slug: "ps5-controller" },
-];
+const getIconForCategory = (name) => {
+  const key = name?.toLowerCase().replace(/\s+/g, "");
+  return categoryIcons[key] || categoryIcons.default;
+};
 
 function HomeContent() {
   const { backendUser, firebaseUser } = useAuth();
+  const router = useRouter();
   const [deals, setDeals] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [trendingProducts, setTrendingProducts] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [loadingTrending, setLoadingTrending] = useState(true);
 
   useEffect(() => {
+    // Fetch deals
     getActiveDeals()
       .then((data) => setDeals(data.deals || []))
       .catch(() => setDeals([]));
+
+    // Fetch categories
+    getCategories()
+      .then((data) => setCategories(data.categories || []))
+      .catch(() => setCategories([]))
+      .finally(() => setLoadingCategories(false));
+
+    // Fetch trending products (top 6 by clickCount)
+    getTrendingProducts(6)
+      .then((data) => setTrendingProducts(data.products || []))
+      .catch(() => setTrendingProducts([]))
+      .finally(() => setLoadingTrending(false));
   }, []);
 
   const memberSince = backendUser?.createdAt
@@ -44,27 +69,27 @@ function HomeContent() {
 
   const getInitial = (name) => name?.charAt(0)?.toUpperCase() || "U";
 
-  /**
-   * Resolve the link for a deal.
-   * If a deal has a linked product, go to its detail page.
-   * Otherwise, go to the deals page.
-   */
   const getDealLink = (deal) => {
     if (deal.product?.slug) return `/products/${deal.product.slug}`;
     return "/deals";
   };
 
-  /**
-   * Render the deal image — either an emoji string or an <img> URL.
-   */
   const renderDealImage = (deal) => {
     if (!deal.image) return <span style={{ fontSize: 64 }}>🏷️</span>;
-    // If it starts with http, render as image
     if (deal.image.startsWith("http")) {
       return <img src={deal.image} alt={deal.title} />;
     }
-    // Otherwise treat as emoji/text
     return <span style={{ fontSize: 64 }}>{deal.image}</span>;
+  };
+
+  /**
+   * When a user clicks on a trending product:
+   * 1. Fire the click-tracker (fire-and-forget)
+   * 2. Navigate to the product detail page
+   */
+  const handleProductClick = (product) => {
+    trackProductClick(product.slug);
+    router.push(`/products/${product.slug}`);
   };
 
   return (
@@ -133,25 +158,37 @@ function HomeContent() {
       <div className="home-main">
         {/* Left Column */}
         <div>
-          {/* Shop by Category */}
+          {/* Shop by Category — dynamic from database */}
           <div className="section-header">
             <h2 className="section-title">Shop by Category</h2>
             <Link href="/products" className="section-link">
               All categories →
             </Link>
           </div>
-          <div className="category-grid">
-            {categories.map((cat) => (
-              <Link
-                key={cat.slug}
-                href={`/products/category/${cat.slug}`}
-                className="category-card"
-              >
-                <span className="category-card-icon">{cat.icon}</span>
-                <span className="category-card-name">{cat.name}</span>
-              </Link>
-            ))}
-          </div>
+          {loadingCategories ? (
+            <div style={{ display: "flex", justifyContent: "center", padding: 40 }}>
+              <Spin />
+            </div>
+          ) : categories.length === 0 ? (
+            <p style={{ color: "var(--text-muted)", marginBottom: 24 }}>
+              No categories yet
+            </p>
+          ) : (
+            <div className="category-grid">
+              {categories.map((cat) => (
+                <Link
+                  key={cat._id}
+                  href={`/products/category/${cat.slug}`}
+                  className="category-card"
+                >
+                  <span className="category-card-icon">
+                    {getIconForCategory(cat.name)}
+                  </span>
+                  <span className="category-card-name">{cat.name}</span>
+                </Link>
+              ))}
+            </div>
+          )}
 
           {/* Featured Deals — dynamic from backend */}
           {deals.length > 0 && (
@@ -187,27 +224,51 @@ function HomeContent() {
             </>
           )}
 
-          {/* Trending Products */}
+          {/* Trending Products — dynamic, sorted by clickCount */}
           <div className="section-header">
             <h2 className="section-title">Trending Products</h2>
             <Link href="/products" className="section-link">
               See all →
             </Link>
           </div>
-          <div className="trending-grid">
-            {trendingProducts.map((p) => (
-              <Link
-                key={p.slug}
-                href={`/products/${p.slug}`}
-                className="trending-card"
-              >
-                <span className="trending-card-icon">{p.icon}</span>
-                <div className="trending-card-category">{p.category}</div>
-                <div className="trending-card-name">{p.name}</div>
-                <div className="trending-card-price">{p.price}</div>
-              </Link>
-            ))}
-          </div>
+          {loadingTrending ? (
+            <div style={{ display: "flex", justifyContent: "center", padding: 40 }}>
+              <Spin />
+            </div>
+          ) : trendingProducts.length === 0 ? (
+            <p style={{ color: "var(--text-muted)", marginBottom: 24 }}>
+              No products yet — add some in the admin panel
+            </p>
+          ) : (
+            <div className="trending-grid">
+              {trendingProducts.map((p) => (
+                <div
+                  key={p._id}
+                  className="trending-card"
+                  onClick={() => handleProductClick(p)}
+                >
+                  {p.images?.[0]?.url ? (
+                    <img
+                      src={p.images[0].url}
+                      alt={p.title}
+                      className="trending-card-thumb"
+                    />
+                  ) : (
+                    <span className="trending-card-icon">
+                      {getIconForCategory(p.category?.name)}
+                    </span>
+                  )}
+                  <div className="trending-card-category">
+                    {p.category?.name || "Uncategorized"}
+                  </div>
+                  <div className="trending-card-name">{p.title}</div>
+                  <div className="trending-card-price">
+                    ${p.price?.toFixed(2)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Right Sidebar */}
