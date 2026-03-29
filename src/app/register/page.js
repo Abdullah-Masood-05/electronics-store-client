@@ -6,6 +6,7 @@ import { MailOutlined, LockOutlined, UserOutlined, GoogleOutlined, CrownOutlined
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import useAuth from "../../hooks/useAuth";
+import "../../styles/auth.css";
 
 const { Title, Text } = Typography;
 

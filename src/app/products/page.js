@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Row, Col, Select, Typography, Spin, Pagination, Empty } from "antd";
 import ProductCard from "../../components/ProductCard";
 import { getProducts } from "../../services/product.service";
+import "../../styles/products.css";
 
 const { Title } = Typography;
 

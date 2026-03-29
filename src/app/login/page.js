@@ -6,6 +6,7 @@ import { MailOutlined, LockOutlined, GoogleOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import useAuth from "../../hooks/useAuth";
+import "../../styles/auth.css";
 
 const { Title, Text } = Typography;
 

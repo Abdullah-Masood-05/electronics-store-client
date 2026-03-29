@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { StarFilled, StarOutlined } from "@ant-design/icons";
 import { Typography } from "antd";
+import "./StarRating.css";
 
 const { Text } = Typography;
 

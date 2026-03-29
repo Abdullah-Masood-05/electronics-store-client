@@ -1,0 +1,27 @@
+/* ======================================
+   StarRating Component
+   ====================================== */
+
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.star-rating-stars {
+  display: flex;
+  gap: 2px;
+}
+
+.star-rating-interactive:hover {
+  transform: scale(1.2);
+}
+
+.star-rating-star {
+  transition: transform 0.15s;
+  display: inline-flex;
+}
+
+.star-rating-count {
+  font-size: 13px;
+}

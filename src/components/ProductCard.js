@@ -3,6 +3,7 @@
 import { Card, Typography, Tag } from "antd";
 import { StarFilled } from "@ant-design/icons";
 import Link from "next/link";
+import "./ProductCard.css";
 
 const { Text, Title } = Typography;
 

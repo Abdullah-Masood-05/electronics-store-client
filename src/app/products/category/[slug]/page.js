@@ -5,6 +5,7 @@ import { Row, Col, Typography, Spin, Pagination, Empty, Breadcrumb } from "antd"
 import Link from "next/link";
 import ProductCard from "../../../../components/ProductCard";
 import { getProductsByCategory } from "../../../../services/product.service";
+import "../../../../styles/products.css";
 
 const { Title } = Typography;
 

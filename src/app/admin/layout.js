@@ -3,6 +3,7 @@
 import { Layout } from "antd";
 import AdminGuard from "../../components/AdminGuard";
 import AdminNav from "../../components/AdminNav";
+import "../../styles/admin.css";
 
 const { Sider, Content } = Layout;
 

@@ -20,6 +20,7 @@ import Link from "next/link";
 import { getProduct, submitRating } from "../../../services/product.service";
 import StarRating from "../../../components/StarRating";
 import useAuth from "../../../hooks/useAuth";
+import "../../../styles/products.css";
 
 const { Title, Text, Paragraph } = Typography;
 

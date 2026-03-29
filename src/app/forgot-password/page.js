@@ -5,6 +5,7 @@ import { Form, Input, Button, Typography, Card, Result, App } from "antd";
 import { MailOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import useAuth from "../../hooks/useAuth";
+import "../../styles/auth.css";
 
 const { Title, Text } = Typography;
 
