@@ -1,12 +1,18 @@
-# ElectroStore — Client
+<h1 align="center">  ElectroStore Client </h1>
 
-![Next.js](https://camo.githubusercontent.com/d54c8c431131b7e8f4d2e85ddf67d13de19820339e50883596b98fccacebe1d3/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f4e6578742e6a732d31362d3030303030303f7374796c653d666c61742d737175617265266c6f676f3d6e657874646f746a73266c6f676f436f6c6f723d7768697465)
-![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=white)
-![Ant Design](https://img.shields.io/badge/Ant%20Design-6-0170FE?style=flat-square&logo=antdesign&logoColor=white)
-![Firebase](https://img.shields.io/badge/Firebase-12-FFCA28?style=flat-square&logo=firebase&logoColor=black)
-![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js 16" />
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=white" alt="React 19" />
+  <img src="https://img.shields.io/badge/Ant%20Design-6-0170FE?style=flat-square&logo=antdesign&logoColor=white" alt="Ant Design 6" />
+  <img src="https://img.shields.io/badge/Firebase-12-FFCA28?style=flat-square&logo=firebase&logoColor=black" alt="Firebase 12" />
+  <img src="https://img.shields.io/badge/Axios-1-5A29E4?style=flat-square&logo=axios&logoColor=white" alt="Axios" />
+  <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT License" />
+</p>
+
+<p align="center">
 Frontend for an electronics store. Browse products, manage your account, and handle admin duties if you've got the access.
+</p>
 
 ## Why This Exists
 
