@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Dropdown } from "antd";
@@ -11,10 +12,36 @@ const Header = () => {
   const { isAuthenticated, backendUser, logout, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const searchInputRef = useRef(null);
 
   const handleLogout = async () => {
     await logout();
     router.replace("/login");
+  };
+
+  // Focus input when search bar opens
+  useEffect(() => {
+    if (searchOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [searchOpen]);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchValue.trim()) {
+      router.push(`/products?keyword=${encodeURIComponent(searchValue.trim())}`);
+      setSearchOpen(false);
+      setSearchValue("");
+    }
+  };
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key === "Escape") {
+      setSearchOpen(false);
+      setSearchValue("");
+    }
   };
 
   const userMenuItems = [
@@ -75,7 +102,7 @@ const Header = () => {
               <Link
                 key={link.href}
                 href={link.href}
-                className={pathname === link.href ? "active" : ""}
+                className={pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href)) ? "active" : ""}
               >
                 {link.label}
               </Link>
@@ -88,12 +115,41 @@ const Header = () => {
           {loading ? null : isAuthenticated ? (
             <>
               {/* Search */}
-              <button className="header-icon-btn" title="Search" id="header-search">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="8" />
-                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-              </button>
+              {searchOpen ? (
+                <form onSubmit={handleSearchSubmit} className="header-search-form">
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    onKeyDown={handleSearchKeyDown}
+                    onBlur={() => {
+                      if (!searchValue.trim()) setSearchOpen(false);
+                    }}
+                    className="header-search-input"
+                    id="header-search-input"
+                  />
+                  <button type="submit" className="header-search-submit" id="header-search-submit">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="11" cy="11" r="8" />
+                      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                  </button>
+                </form>
+              ) : (
+                <button
+                  className="header-icon-btn"
+                  title="Search"
+                  id="header-search"
+                  onClick={() => setSearchOpen(true)}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                </button>
+              )}
 
               {/* Cart */}
               <button className="header-icon-btn" title="Cart" id="header-cart" onClick={() => router.push("/cart")}>

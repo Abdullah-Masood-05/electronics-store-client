@@ -57,3 +57,19 @@ export const trackProductClick = async (slug) => {
     // Fire-and-forget — don't block user navigation
   }
 };
+
+/**
+ * Search products with combinable filters.
+ * @param {Object} filters - { keyword, priceMin, priceMax, category, subcategory, rating, sort, page, limit }
+ */
+export const searchProducts = async (filters = {}) => {
+  const params = new URLSearchParams();
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      params.append(key, value);
+    }
+  });
+  const res = await api.get(`/products/search?${params.toString()}`);
+  return res.data;
+};
+
