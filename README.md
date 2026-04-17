@@ -109,4 +109,4 @@ npm start        # Run production build
 
 ## License
 
-MIT
+MIT, see [LICENSE](LICENSE).
