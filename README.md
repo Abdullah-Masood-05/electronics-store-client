@@ -1,293 +1,106 @@
-<h1 align="center">⚡ ElectroStore — Client</h1>
+# ElectroStore — Client
 
-<p align="center">
-  A modern, full-featured electronics store front-end built with React 19, Ant Design, and Firebase Authentication.
-</p>
+![Next.js](https://camo.githubusercontent.com/d54c8c431131b7e8f4d2e85ddf67d13de19820339e50883596b98fccacebe1d3/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f4e6578742e6a732d31362d3030303030303f7374796c653d666c61742d737175617265266c6f676f3d6e657874646f746a73266c6f676f436f6c6f723d7768697465)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=white)
+![Ant Design](https://img.shields.io/badge/Ant%20Design-6-0170FE?style=flat-square&logo=antdesign&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-12-FFCA28?style=flat-square&logo=firebase&logoColor=black)
+![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js 16" />
-  <img src="https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=white" alt="React 19" />
-  <img src="https://img.shields.io/badge/Ant%20Design-6-0170FE?style=flat-square&logo=antdesign&logoColor=white" alt="Ant Design 6" />
-  <img src="https://img.shields.io/badge/Firebase-12-FFCA28?style=flat-square&logo=firebase&logoColor=black" alt="Firebase 12" />
-  <img src="https://img.shields.io/badge/Axios-1-5A29E4?style=flat-square&logo=axios&logoColor=white" alt="Axios" />
-  <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT License" />
-</p>
+Frontend for an electronics store. Browse products, manage your account, and handle admin duties if you've got the access.
 
----
+## Why This Exists
 
-## Table of Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Architecture](#architecture)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Environment Variables](#environment-variables)
-  - [Running the App](#running-the-app)
-- [Authentication Flow](#authentication-flow)
-- [Security](#security)
-- [Available Scripts](#available-scripts)
-- [Contributing](#contributing)
-- [License](#license)
-
----
-
-## Overview
-
-**ElectroStore** is a full-stack electronics e-commerce platform. This repository contains the **React client**, which handles all user-facing interactions — authentication, browsing, and account management — while communicating with a separate REST API backend.
-
-The client uses **Firebase Authentication** for identity management combined with a **custom backend** for business logic and data persistence, following a dual-auth pattern where Firebase issues JWTs that the backend validates on every request.
-
----
+Started as a practical project to build a real e-commerce experience without the headache of payment processing or overly complex backend infrastructure. The goal was simple: authentication that actually works, a clean product browsing experience, and a proper admin section — all tied together with a REST API backend.
 
 ## Features
 
-- **Authentication** — Email/password registration and login via Firebase, with full error handling and user-friendly messages
-- **Protected Routes** — Route-level access control; unauthenticated users are automatically redirected to `/login`
-- **Persistent Sessions** — Firebase `onAuthStateChanged` listener re-hydrates the session on page reload without requiring re-login
-- **User Dashboard** — Personalized home page showing cart items, wishlist, and account info
-- **Responsive Navigation** — Top header with active-route highlighting, user avatar dropdown, and sign-out
-- **Global 401 Handling** — Axios response interceptor automatically logs the user out on expired or invalid tokens
-- **In-Memory Token Storage** — Firebase JWT is stored only in memory (never in `localStorage`) to reduce XSS exposure
-
----
+- **Auth** — Firebase email/password login and registration. Sessions persist across page reloads.
+- **Browse products** — Categories, subcategories, individual product pages with details.
+- **Admin section** — Manage products, categories, and deals if you're authorized.
+- **Responsive** — Built with Ant Design, works on desktop and mobile.
+- **Protected routes** — Unauthorized users get redirected to login. Admin pages are actually locked down.
 
 ## Tech Stack
 
-| Category | Technology |
-|---|---|
-| Framework | [Next.js 16](https://nextjs.org) |
-| UI Library | [React 19](https://react.dev) |
-| Component Library | [Ant Design 6](https://ant.design) |
-| Authentication | [Firebase 12](https://firebase.google.com) |
-| HTTP Client | [Axios](https://axios-http.com) |
-| State Management | React Context API |
-| Styling | Next.js with CSS modules |
-
----
-
-## Project Structure
-
-```
-electronics-store-client/
-├── public/                     # Static assets
-├── src/
-│   ├── app/                    # Next.js App Router (pages)
-│   │   ├── layout.js           # Root layout wrapper
-│   │   ├── page.js             # Home page
-│   │   ├── globals.css         # Global styles
-│   │   ├── providers.js        # Context & provider setup
-│   │   ├── login/
-│   │   │   └── page.js         # Login page
-│   │   ├── register/
-│   │   │   └── page.js         # Registration page
-│   │   ├── forgot-password/
-│   │   │   └── page.js         # Password recovery page
-│   │   └── admin/              # Admin section (protected)
-│   │       ├── layout.js       # Admin layout
-│   │       ├── dashboard/
-│   │       │   └── page.js     # Admin dashboard
-│   │       ├── category/
-│   │       │   └── page.js     # Category management
-│   │       ├── subcategory/
-│   │       │   └── page.js     # Subcategory management
-│   │       └── product/
-│   │           ├── page.js     # Product listing
-│   │           ├── create/     # Product creation page
-│   │           └── [slug]/     # Product detail page
-│   ├── components/
-│   │   ├── AdminGuard.js       # HOC for admin route protection
-│   │   ├── AdminNav.js         # Admin navigation component
-│   │   ├── AuthGuard.js        # HOC for auth route protection
-│   │   └── nav/
-│   │       └── Header.js       # Global navigation header
-│   ├── context/
-│   │   └── AuthContext.js      # Auth state provider (Firebase + backend)
-│   ├── hooks/
-│   │   └── useAuth.js          # useAuth() hook for consuming auth context
-│   ├── lib/
-│   │   ├── axios.js            # Axios instance with JWT interceptors
-│   │   └── firebase.js         # Firebase app initialization
-│   ├── services/
-│   │   ├── auth.service.js     # Backend auth API calls
-│   │   ├── admin.service.js    # Admin API calls
-│   │   ├── category.service.js # Category API calls
-│   │   ├── product.service.js  # Product API calls
-│   │   └── subcategory.service.js # Subcategory API calls
-│   └── utils/
-│       └── imageResize.js      # Image processing utilities
-├── .env.local                  # Environment variables (not committed)
-├── jsconfig.json               # JavaScript configuration
-├── next.config.mjs             # Next.js configuration
-└── package.json
-```
-
----
-
-## Architecture
-
-```
-┌──────────────────────────────────────────┐
-│          Next.js App (App Router)         │
-│                                           │
-│  ┌─────────────────┐  ┌──────────────┐  │
-│  │  AuthContext    │  │  Ant Design  │  │
-│  │  (Firebase Auth │  │  Components  │  │
-│  │   + Custom JWT) │  └──────────────┘  │
-│  └────────┬────────┘                     │
-│           │                              │
-│  ┌────────▼────────┐  ┌──────────────┐  │
-│  │ Axios Instance  │  │   Middleware │  │
-│  │ + Interceptors  │  │   & Guards   │  │
-│  │ (JWT injection) │  └──────────────┘  │
-│  └────────┬────────┘                     │
-└──────────┼────────────────────────────┘
-           │
-      ┌────▼──────┐        ┌──────────────┐
-      │ REST API   │        │   Firebase   │
-      │ Backend    │        │   Auth       │
-      └───────────┘        └──────────────┘
-```
-
-**Navigation & Routing:**
-- Next.js App Router handles page-based routing via file system (`/app/page.js`, `/app/login/page.js`, etc.)
-- Route protection implemented via `AuthGuard` and `AdminGuard` HOCs wrapping route components
-- Admin routes checked at component render time
-
-**Authentication Flow:**
-1. User submits credentials on `/login` or `/register`
-2. Firebase Authentication verifies identity and returns an ID token
-3. `AuthContext` stores the token in memory and configures Axios interceptors
-4. Every API request automatically attaches `Authorization: Bearer <token>` header
-5. Backend validates the Firebase JWT on each request
-6. On `401` response, Axios response interceptor triggers logout, clearing auth state
-
-**Data Flow:**
-- Components consume auth state via `useAuth()` hook from `AuthContext`
-- API calls made via service layer (`auth.service.js`, `product.service.js`, etc.)
-- Services use the configured Axios instance, which automatically injects the JWT token
-- Token remains in memory only (never persisted to `localStorage` to reduce XSS risk)
-
----
+Next.js 16, React 19, Ant Design 6, Firebase 12, Axios, and the Context API for state management.
 
 ## Getting Started
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org) ≥ 18
-- [npm](https://www.npmjs.com) ≥ 9
-- A [Firebase](https://console.firebase.google.com) project with **Email/Password** authentication enabled
-- The ElectroStore backend running locally or deployed
+- Node.js 18+
+- npm 9+
+- A Firebase project set up with Email/Password auth
+- The backend API running (or a URL to one)
 
-### Installation
+### Setup
 
 ```bash
-# Clone the repository
 git clone https://github.com/your-username/electronics-store-client.git
 cd electronics-store-client
-
-# Install dependencies
 npm install
 ```
 
-### Environment Variables
-
-Create a `.env.local` file in the project root and populate it with your credentials:
+Create a `.env.local` file:
 
 ```env
-# Firebase configuration
-NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_API_KEY=your_key_here
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_firebase_app_id
-
-# Backend API base URL
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 NEXT_PUBLIC_API_URL=http://localhost:8000/api
 ```
 
-> Note: `NEXT_PUBLIC_*` variables are exposed to the client. Firebase API keys are intentionally public and should not be considered sensitive credentials.
-
-
-
-### Running the App
+### Run It
 
 ```bash
-# Start the development server
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open `http://localhost:3000` and you're good to go.
 
-The app will automatically reload when you make changes to files in the `src/app` directory.
-
----
-
-## Authentication Flow
+## Project Layout
 
 ```
-Register                              Login
-────────                              ─────
-User fills form                       User fills form
-       │                                     │
-       ▼                                     ▼
-Firebase createUser...            Firebase signIn...
-       │                                     │
-       ▼                                     ▼
-Get Firebase ID Token              Get Firebase ID Token
-       │                                     │
-       ▼                                     ▼
-POST /auth/create-or-update        GET /auth/me
-(Create user record in DB)         (Fetch backend profile)
-       │                                     │
-       └──────────────┬──────────────────────┘
-                      ▼
-            Store token in memory
-            Set Axios Authorization header
-            Update AuthContext state
-            Redirect to "/"
+src/
+├── app/              # Next.js pages (App Router)
+│   ├── login/
+│   ├── register/
+│   ├── admin/        # Protected admin routes
+│   └── products/
+├── components/       # Reusable React components
+├── context/          # AuthContext for auth state
+├── hooks/            # useAuth() hook
+├── lib/              # Firebase and Axios setup
+├── services/         # API calls
+└── utils/            # Helpers
 ```
 
+## How It Works
 
+1. **Login** — User submits credentials, Firebase authenticates, we get a token
+2. **Token handling** — Token stays in memory, automatically attached to API requests
+3. **Routes** — `AuthGuard` and `AdminGuard` components protect pages before they render
+4. **API calls** — Services use an Axios instance that auto-injects the auth token
+5. **Logout** — If the token expires (401 response), we automatically log you out
 
-## Security
+No `localStorage` for tokens — they live in memory only to avoid XSS vulnerabilities.
 
-| Concern | Approach |
-|---|---|
-| Token storage | In-memory only — never `localStorage` or `sessionStorage` |
-| XSS exposure | Tokens are not accessible via `document.cookie` or `localStorage` |
-| Expired tokens | Global Axios 401 interceptor automatically logs out the user |
-| Route protection | `AuthGuard` and `AdminGuard` HOCs redirect unauthorized users before rendering |
-| Firebase config | All keys loaded from `process.env.NEXT_PUBLIC_*` — never hard-coded |
+## Commands
 
----
+```bash
+npm run dev      # Dev server
+npm run build    # Build for production
+npm start        # Run production build
+```
 
-## Available Scripts
+## Notes
 
-| Command | Description |
-|---|---|
-| `npm run dev` | Start the Next.js development server on port 3000 |
-| `npm run build` | Build the app for production |
-| `npm start` | Start the production server |
-
----
-
-## Contributing
-
-Contributions are welcome! To contribute:
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/my-feature`
-3. Commit your changes using [Conventional Commits](https://www.conventionalcommits.org): `git commit -m "feat: add my feature"`
-4. Push to the branch: `git push origin feature/my-feature`
-5. Open a Pull Request
-
-Please follow the existing code style and make sure `npm run lint` passes before submitting.
-
----
+- This is a frontend only. You need the backend API running for anything to work.
+- Firebase auth is configured through environment variables. Make sure they're set up right or nothing will authenticate.
+- The admin section exists but requires actual admin privileges on the backend — the frontend just gates the routes.
+- Images are resized client-side to keep requests smaller.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+MIT
