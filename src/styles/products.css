@@ -318,6 +318,24 @@
   margin-bottom: 0 !important;
 }
 
+/* Add to Cart */
+.product-add-to-cart {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.product-atc-btn {
+  background: var(--accent-primary) !important;
+  border: none !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  height: 40px !important;
+  padding: 0 24px !important;
+}
+
 .product-detail-meta {
   display: flex;
   flex-direction: column;
