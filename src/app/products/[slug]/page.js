@@ -10,6 +10,8 @@ import {
   Card,
   App,
   Breadcrumb,
+  InputNumber,
+  Button,
 } from "antd";
 import {
   CheckCircleOutlined,
@@ -20,6 +22,7 @@ import Link from "next/link";
 import { getProduct, submitRating } from "../../../services/product.service";
 import StarRating from "../../../components/StarRating";
 import useAuth from "../../../hooks/useAuth";
+import useCart from "../../../context/CartContext";
 import "../../../styles/products.css";
 
 const { Title, Text, Paragraph } = Typography;
@@ -30,7 +33,9 @@ export default function ProductDetailPage({ params }) {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [ratingLoading, setRatingLoading] = useState(false);
+  const [qty, setQty] = useState(1);
   const { isAuthenticated, backendUser } = useAuth();
+  const { addToCart } = useCart();
   const { message } = App.useApp();
 
   const loadProduct = async () => {
@@ -148,6 +153,31 @@ export default function ProductDetailPage({ params }) {
           <Title level={3} className="product-detail-price">
             ${product.price?.toFixed(2)}
           </Title>
+
+          {/* Add to Cart */}
+          {product.quantity > 0 && (
+            <div className="product-add-to-cart">
+              <InputNumber
+                min={1}
+                max={product.quantity}
+                value={qty}
+                onChange={(v) => setQty(v || 1)}
+                size="large"
+              />
+              <Button
+                type="primary"
+                size="large"
+                onClick={() => {
+                  addToCart(product, qty);
+                  setQty(1);
+                }}
+                className="product-atc-btn"
+                id="add-to-cart"
+              >
+                Add to Cart
+              </Button>
+            </div>
+          )}
 
           <Divider style={{ borderColor: "var(--border-color)" }} />
 

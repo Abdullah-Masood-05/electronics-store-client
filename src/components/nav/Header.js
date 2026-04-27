@@ -6,10 +6,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { Dropdown } from "antd";
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import useAuth from "../../hooks/useAuth";
+import useCart from "../../context/CartContext";
 import "./Header.css";
 
 const Header = () => {
   const { isAuthenticated, backendUser, logout, loading } = useAuth();
+  const { cartCount } = useCart();
   const router = useRouter();
   const pathname = usePathname();
   const [searchOpen, setSearchOpen] = useState(false);
@@ -159,7 +161,7 @@ const Header = () => {
                   <path d="M16 10a4 4 0 01-8 0" />
                 </svg>
                 <span className="header-cart-badge">
-                  {backendUser?.cart?.length || 0}
+                  {cartCount}
                 </span>
               </button>
 
