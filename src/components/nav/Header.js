@@ -4,56 +4,50 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Dropdown } from "antd";
-import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
+import { LogoutOutlined, UserOutlined, SettingOutlined } from "@ant-design/icons";
 import useAuth from "../../hooks/useAuth";
 import useCart from "../../context/CartContext";
 import "./Header.css";
+
+const categoryNav = [
+  { href: "/products?category=phones", label: "Phones" },
+  { href: "/products?category=laptops", label: "Laptops" },
+  { href: "/products?category=audio", label: "Audio" },
+  { href: "/products?category=gaming", label: "Gaming" },
+  { href: "/products?category=accessories", label: "Accessories" },
+  { href: "/deals", label: "Deals" },
+];
 
 const Header = () => {
   const { isAuthenticated, backendUser, logout, loading } = useAuth();
   const { cartCount } = useCart();
   const router = useRouter();
   const pathname = usePathname();
-  const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const searchInputRef = useRef(null);
+  const searchRef = useRef(null);
 
   const handleLogout = async () => {
     await logout();
     router.replace("/login");
   };
 
-  // Focus input when search bar opens
-  useEffect(() => {
-    if (searchOpen && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, [searchOpen]);
-
-  const handleSearchSubmit = (e) => {
+  const handleSearch = (e) => {
     e.preventDefault();
     if (searchValue.trim()) {
       router.push(`/products?keyword=${encodeURIComponent(searchValue.trim())}`);
-      setSearchOpen(false);
       setSearchValue("");
     }
   };
 
-  const handleSearchKeyDown = (e) => {
-    if (e.key === "Escape") {
-      setSearchOpen(false);
-      setSearchValue("");
-    }
-  };
+  const getInitial = (name) => name?.charAt(0)?.toUpperCase() || "U";
 
   const userMenuItems = [
     {
-      key: "profile",
-      icon: <UserOutlined />,
+      key: "info",
       label: (
-        <div>
-          <div style={{ fontWeight: 600 }}>{backendUser?.name || "User"}</div>
-          <div style={{ fontSize: 12, opacity: 0.7 }}>{backendUser?.email}</div>
+        <div className="user-menu-info">
+          <div className="user-menu-name">{backendUser?.name || "User"}</div>
+          <div className="user-menu-email">{backendUser?.email}</div>
         </div>
       ),
       disabled: true,
@@ -63,13 +57,20 @@ const Header = () => {
       ? [
           {
             key: "admin",
-            icon: <UserOutlined />,
-            label: "Admin Dashboard",
+            icon: <SettingOutlined />,
+            label: "Admin Panel",
             onClick: () => router.push("/admin/dashboard"),
           },
           { type: "divider" },
         ]
       : []),
+    {
+      key: "orders",
+      icon: <UserOutlined />,
+      label: "My Orders",
+      onClick: () => router.push("/orders"),
+    },
+    { type: "divider" },
     {
       key: "logout",
       icon: <LogoutOutlined />,
@@ -79,123 +80,95 @@ const Header = () => {
     },
   ];
 
-  const navLinks = [
-    { href: "/", label: "Home" },
-    { href: "/products", label: "Products" },
-    { href: "/deals", label: "Deals" },
-    { href: "/orders", label: "Orders" },
-  ];
-
-  const getInitial = (name) => name?.charAt(0)?.toUpperCase() || "U";
-
   return (
-    <header className="app-header">
-      <div className="header-content">
-        {/* Logo */}
-        <Link href="/" className="header-logo">
-          <span className="logo-icon">⚡</span>
-          <span className="logo-text">ElectroStore</span>
-        </Link>
+    <header className="site-header">
+      {/* Row 1: Main Nav */}
+      <div className="nav-main">
+        <div className="nav-main-inner container">
+          {/* Logo */}
+          <Link href="/" className="nav-logo" id="site-logo">
+            <span className="nav-logo-mark">⚡</span>
+            <span className="nav-logo-text">ElectroStore</span>
+          </Link>
 
-        {/* Pill Navigation */}
-        {isAuthenticated && (
-          <nav className="header-pill-nav">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href)) ? "active" : ""}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-        )}
+          {/* Search */}
+          {isAuthenticated && (
+            <form className="nav-search" onSubmit={handleSearch}>
+              <svg className="nav-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <input
+                ref={searchRef}
+                type="text"
+                placeholder="Search phones, laptops, accessories..."
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                className="nav-search-input"
+                id="nav-search-input"
+              />
+            </form>
+          )}
 
-        {/* Right Section */}
-        <div className="header-icons">
-          {loading ? null : isAuthenticated ? (
-            <>
-              {/* Search */}
-              {searchOpen ? (
-                <form onSubmit={handleSearchSubmit} className="header-search-form">
-                  <input
-                    ref={searchInputRef}
-                    type="text"
-                    placeholder="Search products..."
-                    value={searchValue}
-                    onChange={(e) => setSearchValue(e.target.value)}
-                    onKeyDown={handleSearchKeyDown}
-                    onBlur={() => {
-                      if (!searchValue.trim()) setSearchOpen(false);
-                    }}
-                    className="header-search-input"
-                    id="header-search-input"
-                  />
-                  <button type="submit" className="header-search-submit" id="header-search-submit">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="11" cy="11" r="8" />
-                      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          {/* Right Actions */}
+          <div className="nav-actions">
+            {loading ? null : isAuthenticated ? (
+              <>
+                {/* Account */}
+                <Dropdown menu={{ items: userMenuItems }} placement="bottomRight" trigger={["click"]}>
+                  <button className="nav-action-btn" id="nav-account" title="Account">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                      <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
                     </svg>
                   </button>
-                </form>
-              ) : (
-                <button
-                  className="header-icon-btn"
-                  title="Search"
-                  id="header-search"
-                  onClick={() => setSearchOpen(true)}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="11" cy="11" r="8" />
-                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </Dropdown>
+
+                {/* Wishlist */}
+                <button className="nav-action-btn" id="nav-wishlist" title="Wishlist" onClick={() => router.push("/wishlist")}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                    <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
                   </svg>
                 </button>
-              )}
 
-              {/* Cart */}
-              <button className="header-icon-btn" title="Cart" id="header-cart" onClick={() => router.push("/cart")}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <path d="M16 10a4 4 0 01-8 0" />
-                </svg>
-                <span className="header-cart-badge">
-                  {cartCount}
-                </span>
-              </button>
-
-              {/* Bell */}
-              <button className="header-icon-btn" title="Notifications" id="header-notifications">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                  <path d="M13.73 21a2 2 0 01-3.46 0" />
-                </svg>
-              </button>
-
-              {/* Avatar Dropdown */}
-              <Dropdown
-                menu={{ items: userMenuItems }}
-                placement="bottomRight"
-                trigger={["click"]}
-              >
-                <div className="header-avatar" id="user-menu-trigger">
-                  {getInitial(backendUser?.name)}
-                </div>
-              </Dropdown>
-            </>
-          ) : (
-            <div className="header-auth-btns">
-              <Link href="/login">
-                <button className="btn-outline" id="header-login-btn">Sign In</button>
-              </Link>
-              <Link href="/register">
-                <button className="btn-primary" id="header-register-btn">Sign Up</button>
-              </Link>
-            </div>
-          )}
+                {/* Cart */}
+                <button className="nav-action-btn nav-cart-btn" id="nav-cart" title="Cart" onClick={() => router.push("/cart")}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <path d="M16 10a4 4 0 01-8 0" />
+                  </svg>
+                  {cartCount > 0 && (
+                    <span className="nav-cart-badge">{cartCount}</span>
+                  )}
+                </button>
+              </>
+            ) : (
+              <div className="nav-auth">
+                <Link href="/login" className="btn btn-outline btn-sm" id="nav-login">Sign In</Link>
+                <Link href="/register" className="btn btn-primary btn-sm" id="nav-register">Sign Up</Link>
+              </div>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Row 2: Category Nav */}
+      {isAuthenticated && (
+        <nav className="nav-categories">
+          <div className="nav-categories-inner container">
+            {categoryNav.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className={`nav-cat-link ${pathname === item.href || (item.href.includes("category=") && pathname.includes("/products")) ? "" : ""}`}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </nav>
+      )}
     </header>
   );
 };

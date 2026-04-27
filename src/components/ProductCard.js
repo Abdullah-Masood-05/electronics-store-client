@@ -1,15 +1,16 @@
 "use client";
 
-import { Card, Typography, Tag } from "antd";
-import { StarFilled } from "@ant-design/icons";
+import { useState } from "react";
 import Link from "next/link";
+import { StarFilled, HeartOutlined, HeartFilled } from "@ant-design/icons";
 import { trackProductClick } from "../services/product.service";
+import useCart from "../context/CartContext";
 import "./ProductCard.css";
 
-const { Text, Title } = Typography;
-
 const ProductCard = ({ product }) => {
-  // Calculate average rating
+  const [wishlisted, setWishlisted] = useState(false);
+  const { addToCart } = useCart();
+
   const avgRating =
     product.ratings?.length > 0
       ? (
@@ -22,49 +23,84 @@ const ProductCard = ({ product }) => {
     trackProductClick(product.slug);
   };
 
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart(product, 1);
+  };
+
+  const handleWishlist = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setWishlisted(!wishlisted);
+  };
+
+  const discount = product.oldPrice
+    ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
+    : null;
+
   return (
-    <Link href={`/products/${product.slug}`} className="product-card-link" onClick={handleClick}>
-      <Card
-        className="product-card"
-        variant="borderless"
-        cover={
-          <div className="product-card-image">
-            {product.images?.[0]?.url ? (
-              <img src={product.images[0].url} alt={product.title} />
-            ) : (
-              <div className="product-card-placeholder">No Image</div>
-            )}
-          </div>
-        }
-      >
-        <div className="product-card-body">
-          <Text className="product-card-category">
-            {product.category?.name || "Uncategorized"}
-          </Text>
-          <Title level={5} className="product-card-title" ellipsis={{ rows: 2 }}>
-            {product.title}
-          </Title>
-          <div className="product-card-footer">
-            <Text className="product-card-price">
-              ${product.price?.toFixed(2)}
-            </Text>
-            {avgRating && (
-              <div className="product-card-rating">
-                <StarFilled style={{ color: "#fadb14", fontSize: 13 }} />
-                <Text className="product-card-rating-text">
-                  {avgRating} ({product.ratings.length})
-                </Text>
-              </div>
-            )}
-          </div>
-          {product.shipping && (
-            <Tag color="green" className="product-card-shipping">
-              Free Shipping
-            </Tag>
+    <div className="pc">
+      <Link href={`/products/${product.slug}`} className="pc-link" onClick={handleClick}>
+        {/* Image */}
+        <div className="pc-media">
+          {product.images?.[0]?.url ? (
+            <img src={product.images[0].url} alt={product.title} className="pc-img" loading="lazy" />
+          ) : (
+            <div className="pc-placeholder">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                <circle cx="8.5" cy="8.5" r="1.5" />
+                <polyline points="21 15 16 10 5 21" />
+              </svg>
+            </div>
           )}
+
+          {/* Wishlist */}
+          <button className="pc-wish" onClick={handleWishlist} title="Wishlist">
+            {wishlisted ? (
+              <HeartFilled style={{ color: "var(--red)" }} />
+            ) : (
+              <HeartOutlined />
+            )}
+          </button>
+
+          {/* Badges */}
+          <div className="pc-badges">
+            {product.shipping && <span className="badge badge-green">Free Shipping</span>}
+            {discount && <span className="badge badge-red">-{discount}%</span>}
+          </div>
         </div>
-      </Card>
-    </Link>
+
+        {/* Info */}
+        <div className="pc-body">
+          {product.brand && <div className="pc-brand">{product.brand}</div>}
+          <h3 className="pc-title">{product.title}</h3>
+
+          {/* Rating */}
+          {avgRating && (
+            <div className="pc-rating">
+              <StarFilled className="pc-star" />
+              <span className="pc-rating-val">{avgRating}</span>
+              <span className="pc-rating-count">({product.ratings.length})</span>
+            </div>
+          )}
+
+          {/* Price */}
+          <div className="pc-price-row">
+            <span className="pc-price">${product.price?.toFixed(2)}</span>
+            {product.oldPrice && (
+              <span className="pc-old-price">${product.oldPrice.toFixed(2)}</span>
+            )}
+          </div>
+        </div>
+      </Link>
+
+      {/* Add to Cart */}
+      <button className="pc-atc" onClick={handleAddToCart} id={`atc-${product.slug}`}>
+        Add to Cart
+      </button>
+    </div>
   );
 };
 

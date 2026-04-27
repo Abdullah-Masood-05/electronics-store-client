@@ -2,29 +2,21 @@
 
 import { useEffect, useState, useCallback, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Row, Col, Spin, Pagination, Empty, Input, Slider, Select, Rate, Button, Typography, Tag } from "antd";
-import { SearchOutlined, FilterOutlined, CloseOutlined } from "@ant-design/icons";
+import { Spin, Pagination, Empty, Input, Slider, Select, Rate, Button, Tag, Typography } from "antd";
+import { FilterOutlined, CloseOutlined } from "@ant-design/icons";
 import ProductCard from "../../components/ProductCard";
+import AuthGuard from "../../components/AuthGuard";
 import { searchProducts } from "../../services/product.service";
 import { getCategories } from "../../services/category.service";
 import { getSubCategories } from "../../services/subcategory.service";
 import "../../styles/products.css";
 
-const { Title, Text } = Typography;
-
-const sortOptions = [
-  { label: "Newest", value: "newest" },
-  { label: "Price: Low → High", value: "price-asc" },
-  { label: "Price: High → Low", value: "price-desc" },
-  { label: "Best Selling", value: "best-selling" },
-  { label: "Most Popular", value: "popular" },
-];
+const { Text } = Typography;
 
 function ProductsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // Filter state — initialized from URL search params
   const [keyword, setKeyword] = useState(searchParams.get("keyword") || "");
   const [priceRange, setPriceRange] = useState([
     Number(searchParams.get("priceMin")) || 0,
@@ -37,42 +29,30 @@ function ProductsContent() {
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
   const [keywordInput, setKeywordInput] = useState(searchParams.get("keyword") || "");
 
-  // Ref to avoid circular URL sync
   const skipUrlSync = useRef(false);
 
-  // Sync URL search params → state when URL changes externally (e.g. header search)
+  // Sync URL → state
   useEffect(() => {
-    const urlKeyword = searchParams.get("keyword") || "";
-    const urlPriceMin = Number(searchParams.get("priceMin")) || 0;
-    const urlPriceMax = Number(searchParams.get("priceMax")) || 10000;
-    const urlCategory = searchParams.get("category") || "";
-    const urlSubcategory = searchParams.get("subcategory") || "";
-    const urlRating = Number(searchParams.get("rating")) || 0;
-    const urlSort = searchParams.get("sort") || "newest";
-    const urlPage = Number(searchParams.get("page")) || 1;
-
-    // Only update state if values actually differ (prevents infinite loops)
     skipUrlSync.current = true;
-    setKeyword((prev) => prev !== urlKeyword ? urlKeyword : prev);
-    setKeywordInput((prev) => prev !== urlKeyword ? urlKeyword : prev);
-    setPriceRange((prev) =>
-      prev[0] !== urlPriceMin || prev[1] !== urlPriceMax
-        ? [urlPriceMin, urlPriceMax]
-        : prev
-    );
-    setSelectedCategory((prev) => prev !== urlCategory ? urlCategory : prev);
-    setSelectedSubcategory((prev) => prev !== urlSubcategory ? urlSubcategory : prev);
-    setMinRating((prev) => prev !== urlRating ? urlRating : prev);
-    setSort((prev) => prev !== urlSort ? urlSort : prev);
-    setPage((prev) => prev !== urlPage ? urlPage : prev);
-
-    // Allow URL sync again after this render
-    requestAnimationFrame(() => {
-      skipUrlSync.current = false;
-    });
+    const urlKw = searchParams.get("keyword") || "";
+    setKeyword((p) => (p !== urlKw ? urlKw : p));
+    setKeywordInput((p) => (p !== urlKw ? urlKw : p));
+    const pm = Number(searchParams.get("priceMin")) || 0;
+    const px = Number(searchParams.get("priceMax")) || 10000;
+    setPriceRange((p) => (p[0] !== pm || p[1] !== px ? [pm, px] : p));
+    const c = searchParams.get("category") || "";
+    setSelectedCategory((p) => (p !== c ? c : p));
+    const sc = searchParams.get("subcategory") || "";
+    setSelectedSubcategory((p) => (p !== sc ? sc : p));
+    const r = Number(searchParams.get("rating")) || 0;
+    setMinRating((p) => (p !== r ? r : p));
+    const s = searchParams.get("sort") || "newest";
+    setSort((p) => (p !== s ? s : p));
+    const pg = Number(searchParams.get("page")) || 1;
+    setPage((p) => (p !== pg ? pg : p));
+    requestAnimationFrame(() => { skipUrlSync.current = false; });
   }, [searchParams]);
 
-  // Data state
   const [products, setProducts] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -80,22 +60,15 @@ function ProductsContent() {
   const [subcategories, setSubcategories] = useState([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  // Load categories on mount
   useEffect(() => {
-    getCategories()
-      .then((data) => setCategories(data.categories || []))
-      .catch(() => setCategories([]));
+    getCategories().then((d) => setCategories(d.categories || [])).catch(() => setCategories([]));
   }, []);
 
-  // Load subcategories when category changes
   useEffect(() => {
     if (selectedCategory) {
-      // Find the category _id from slug
       const cat = categories.find((c) => c.slug === selectedCategory || c._id === selectedCategory);
       if (cat) {
-        getSubCategories(cat._id)
-          .then((data) => setSubcategories(data.subcategories || []))
-          .catch(() => setSubcategories([]));
+        getSubCategories(cat._id).then((d) => setSubcategories(d.subcategories || [])).catch(() => setSubcategories([]));
       }
     } else {
       setSubcategories([]);
@@ -103,22 +76,16 @@ function ProductsContent() {
     }
   }, [selectedCategory, categories]);
 
-  // Build filters & fetch products
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
-      const filters = {
-        page,
-        limit: 12,
-        sort,
-      };
+      const filters = { page, limit: 12, sort };
       if (keyword.trim()) filters.keyword = keyword.trim();
       if (priceRange[0] > 0) filters.priceMin = priceRange[0];
       if (priceRange[1] < 10000) filters.priceMax = priceRange[1];
       if (selectedCategory) filters.category = selectedCategory;
       if (selectedSubcategory) filters.subcategory = selectedSubcategory;
       if (minRating > 0) filters.rating = minRating;
-
       const data = await searchProducts(filters);
       setProducts(data.products || []);
       setTotal(data.total || 0);
@@ -130,121 +97,89 @@ function ProductsContent() {
     }
   }, [keyword, priceRange, selectedCategory, selectedSubcategory, minRating, sort, page]);
 
-  // Fetch on filter change
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+  useEffect(() => { fetchProducts(); }, [fetchProducts]);
 
-  // Sync filters to URL (bookmarkable) — skip when URL just drove the state
   useEffect(() => {
     if (skipUrlSync.current) return;
-
-    const params = new URLSearchParams();
-    if (keyword.trim()) params.set("keyword", keyword.trim());
-    if (priceRange[0] > 0) params.set("priceMin", priceRange[0]);
-    if (priceRange[1] < 10000) params.set("priceMax", priceRange[1]);
-    if (selectedCategory) params.set("category", selectedCategory);
-    if (selectedSubcategory) params.set("subcategory", selectedSubcategory);
-    if (minRating > 0) params.set("rating", minRating);
-    if (sort !== "newest") params.set("sort", sort);
-    if (page > 1) params.set("page", page);
-
-    const qs = params.toString();
+    const p = new URLSearchParams();
+    if (keyword.trim()) p.set("keyword", keyword.trim());
+    if (priceRange[0] > 0) p.set("priceMin", priceRange[0]);
+    if (priceRange[1] < 10000) p.set("priceMax", priceRange[1]);
+    if (selectedCategory) p.set("category", selectedCategory);
+    if (selectedSubcategory) p.set("subcategory", selectedSubcategory);
+    if (minRating > 0) p.set("rating", minRating);
+    if (sort !== "newest") p.set("sort", sort);
+    if (page > 1) p.set("page", page);
+    const qs = p.toString();
     router.replace(`/products${qs ? `?${qs}` : ""}`, { scroll: false });
   }, [keyword, priceRange, selectedCategory, selectedSubcategory, minRating, sort, page]);
 
   const clearFilters = () => {
-    setKeyword("");
-    setKeywordInput("");
-    setPriceRange([0, 10000]);
-    setSelectedCategory("");
-    setSelectedSubcategory("");
-    setMinRating(0);
-    setSort("newest");
-    setPage(1);
+    setKeyword(""); setKeywordInput(""); setPriceRange([0, 10000]);
+    setSelectedCategory(""); setSelectedSubcategory("");
+    setMinRating(0); setSort("newest"); setPage(1);
   };
 
-  const hasActiveFilters =
-    keyword.trim() ||
-    priceRange[0] > 0 ||
-    priceRange[1] < 10000 ||
-    selectedCategory ||
-    selectedSubcategory ||
-    minRating > 0;
+  const hasActiveFilters = keyword.trim() || priceRange[0] > 0 || priceRange[1] < 10000 || selectedCategory || selectedSubcategory || minRating > 0;
 
-  // Debounce keyword input
   useEffect(() => {
-    const t = setTimeout(() => {
-      setKeyword(keywordInput);
-      setPage(1);
-    }, 400);
+    const t = setTimeout(() => { setKeyword(keywordInput); setPage(1); }, 400);
     return () => clearTimeout(t);
   }, [keywordInput]);
 
   return (
     <div className="products-page">
-      {/* Header Bar */}
+      {/* Header */}
       <div className="products-header">
         <div className="products-header-left">
-          <Title level={2} className="products-title">Products</Title>
-          {total > 0 && (
-            <Text className="products-count">{total} result{total !== 1 ? "s" : ""}</Text>
-          )}
+          <h1 className="products-title">Products</h1>
+          <span className="products-count">{total} results</span>
         </div>
         <div className="products-header-right">
-          <button
-            className={`filter-toggle-btn ${filtersOpen ? "active" : ""}`}
-            onClick={() => setFiltersOpen(!filtersOpen)}
-            id="toggle-filters"
-          >
-            <FilterOutlined /> Filters
+          <button className={`filter-toggle-btn ${filtersOpen ? "active" : ""}`} onClick={() => setFiltersOpen(!filtersOpen)}>
+            <FilterOutlined />
+            Filters
             {hasActiveFilters && <span className="filter-dot" />}
           </button>
           <Select
             value={sort}
             onChange={(v) => { setSort(v); setPage(1); }}
-            options={sortOptions}
-            className="products-sort-select"
-            style={{ width: 180 }}
-            id="products-sort"
+            style={{ width: 160 }}
+            size="small"
+            options={[
+              { label: "Newest", value: "newest" },
+              { label: "Price: Low → High", value: "price-asc" },
+              { label: "Price: High → Low", value: "price-desc" },
+              { label: "Most Popular", value: "popular" },
+            ]}
+            id="sort-select"
           />
         </div>
       </div>
 
-      {/* Active filter tags */}
+      {/* Active Filter Tags */}
       {hasActiveFilters && (
         <div className="active-filters-bar">
           {keyword.trim() && (
-            <Tag closable onClose={() => { setKeywordInput(""); setKeyword(""); }} className="filter-tag">
-              Search: {keyword}
-            </Tag>
+            <Tag closable onClose={() => { setKeyword(""); setKeywordInput(""); }} className="filter-tag">"{keyword}"</Tag>
           )}
           {selectedCategory && (
-            <Tag closable onClose={() => setSelectedCategory("")} className="filter-tag">
-              Category: {categories.find((c) => c.slug === selectedCategory)?.name || selectedCategory}
-            </Tag>
+            <Tag closable onClose={() => setSelectedCategory("")} className="filter-tag">{selectedCategory}</Tag>
           )}
           {selectedSubcategory && (
-            <Tag closable onClose={() => setSelectedSubcategory("")} className="filter-tag">
-              Subcategory: {subcategories.find((s) => s.slug === selectedSubcategory)?.name || selectedSubcategory}
-            </Tag>
+            <Tag closable onClose={() => setSelectedSubcategory("")} className="filter-tag">{selectedSubcategory}</Tag>
           )}
           {(priceRange[0] > 0 || priceRange[1] < 10000) && (
-            <Tag closable onClose={() => setPriceRange([0, 10000])} className="filter-tag">
-              ${priceRange[0]} – ${priceRange[1]}
-            </Tag>
+            <Tag closable onClose={() => setPriceRange([0, 10000])} className="filter-tag">${priceRange[0]}–${priceRange[1]}</Tag>
           )}
           {minRating > 0 && (
-            <Tag closable onClose={() => setMinRating(0)} className="filter-tag">
-              {minRating}+ Stars
-            </Tag>
+            <Tag closable onClose={() => setMinRating(0)} className="filter-tag">{minRating}+ stars</Tag>
           )}
-          <Button type="link" size="small" onClick={clearFilters} className="clear-all-btn">
-            Clear all
-          </Button>
+          <Button type="link" size="small" onClick={clearFilters} className="clear-all-btn">Clear All</Button>
         </div>
       )}
 
+      {/* Layout */}
       <div className="products-layout">
         {/* Filter Sidebar */}
         <aside className={`filter-sidebar ${filtersOpen ? "open" : ""}`}>
@@ -257,26 +192,27 @@ function ProductsContent() {
 
           {/* Search */}
           <div className="filter-group">
-            <label className="filter-label">Search</label>
+            <div className="filter-label">Search</div>
             <Input
               placeholder="Search products..."
-              prefix={<SearchOutlined />}
               value={keywordInput}
               onChange={(e) => setKeywordInput(e.target.value)}
               allowClear
-              id="filter-keyword"
+              size="small"
+              id="filter-search"
             />
           </div>
 
           {/* Category */}
           <div className="filter-group">
-            <label className="filter-label">Category</label>
+            <div className="filter-label">Category</div>
             <Select
-              placeholder="All categories"
               value={selectedCategory || undefined}
               onChange={(v) => { setSelectedCategory(v || ""); setSelectedSubcategory(""); setPage(1); }}
               allowClear
+              placeholder="All categories"
               style={{ width: "100%" }}
+              size="small"
               options={categories.map((c) => ({ label: c.name, value: c.slug }))}
               id="filter-category"
             />
@@ -285,93 +221,69 @@ function ProductsContent() {
           {/* Subcategory */}
           {subcategories.length > 0 && (
             <div className="filter-group">
-              <label className="filter-label">Subcategory</label>
+              <div className="filter-label">Subcategory</div>
               <Select
-                placeholder="All subcategories"
                 value={selectedSubcategory || undefined}
                 onChange={(v) => { setSelectedSubcategory(v || ""); setPage(1); }}
                 allowClear
+                placeholder="All"
                 style={{ width: "100%" }}
+                size="small"
                 options={subcategories.map((s) => ({ label: s.name, value: s.slug }))}
                 id="filter-subcategory"
               />
             </div>
           )}
 
-          {/* Price Range */}
+          {/* Price */}
           <div className="filter-group">
-            <label className="filter-label">
-              Price Range
-              <span className="filter-label-value">
-                ${priceRange[0]} — ${priceRange[1]}
-              </span>
-            </label>
+            <div className="filter-label">
+              <span>Price</span>
+              <span className="filter-label-value">${priceRange[0]} – ${priceRange[1]}</span>
+            </div>
             <Slider
               range
               min={0}
               max={10000}
               step={50}
               value={priceRange}
-              onChange={(v) => setPriceRange(v)}
-              onChangeComplete={() => setPage(1)}
+              onChange={(v) => { setPriceRange(v); setPage(1); }}
               className="filter-slider"
             />
           </div>
 
           {/* Rating */}
           <div className="filter-group">
-            <label className="filter-label">Minimum Rating</label>
+            <div className="filter-label">Rating</div>
             <div className="filter-rating-row">
-              <Rate
-                value={minRating}
-                onChange={(v) => { setMinRating(v); setPage(1); }}
-                allowClear
-                className="filter-rate"
-              />
-              {minRating > 0 && (
-                <Text className="filter-rating-text">{minRating}+ stars</Text>
-              )}
+              <Rate value={minRating} onChange={(v) => { setMinRating(v); setPage(1); }} />
+              <Text className="filter-rating-text">{minRating > 0 ? `${minRating}+` : "Any"}</Text>
             </div>
           </div>
 
-          {/* Clear All */}
-          {hasActiveFilters && (
-            <Button block onClick={clearFilters} className="filter-clear-btn" id="clear-filters">
-              Clear All Filters
-            </Button>
-          )}
+          <Button block onClick={clearFilters} className="filter-clear-btn">
+            Reset Filters
+          </Button>
         </aside>
 
-        {/* Product Grid */}
+        {/* Products */}
         <div className="products-grid-area">
           {loading ? (
-            <div className="products-loading">
-              <Spin size="large" />
-            </div>
+            <div className="products-loading"><Spin size="large" /></div>
           ) : products.length === 0 ? (
-            <Empty
-              description={
-                hasActiveFilters
-                  ? "No products match your filters"
-                  : "No products found"
-              }
-            />
+            <Empty description={<Text style={{ color: "var(--text-muted)" }}>No products found</Text>} />
           ) : (
             <>
-              <Row gutter={[20, 20]}>
-                {products.map((product) => (
-                  <Col xs={24} sm={12} md={8} lg={8} key={product._id}>
-                    <ProductCard product={product} />
-                  </Col>
-                ))}
-              </Row>
+              <div className="product-grid">
+                {products.map((p) => <ProductCard key={p._id} product={p} />)}
+              </div>
               {total > 12 && (
                 <div className="products-pagination">
                   <Pagination
                     current={page}
                     total={total}
                     pageSize={12}
-                    onChange={(p) => setPage(p)}
+                    onChange={(p) => { setPage(p); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                     showSizeChanger={false}
                   />
                 </div>
@@ -386,14 +298,10 @@ function ProductsContent() {
 
 export default function ProductsPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="products-loading">
-          <Spin size="large" />
-        </div>
-      }
-    >
-      <ProductsContent />
-    </Suspense>
+    <AuthGuard>
+      <Suspense fallback={<div className="products-loading"><Spin size="large" /></div>}>
+        <ProductsContent />
+      </Suspense>
+    </AuthGuard>
   );
 }
