@@ -2,6 +2,7 @@
 
 import { ConfigProvider, theme, Layout, App } from "antd";
 import { AuthProvider } from "../context/AuthContext";
+import { CartProvider } from "../context/CartContext";
 import Header from "../components/nav/Header";
 
 const { Content } = Layout;
@@ -22,10 +23,12 @@ export default function ClientProviders({ children }) {
     <ConfigProvider theme={darkTheme}>
       <App>
         <AuthProvider>
-          <Layout className="app-layout">
-            <Header />
-            <Content className="app-content">{children}</Content>
-          </Layout>
+          <CartProvider>
+            <Layout className="app-layout">
+              <Header />
+              <Content className="app-content">{children}</Content>
+            </Layout>
+          </CartProvider>
         </AuthProvider>
       </App>
     </ConfigProvider>

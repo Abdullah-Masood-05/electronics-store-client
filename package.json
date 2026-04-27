@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
+    "@stripe/react-stripe-js": "^6.2.0",
+    "@stripe/stripe-js": "^9.3.1",
     "antd": "^6.3.2",
     "axios": "^1.13.6",
     "firebase": "^12.10.0",
