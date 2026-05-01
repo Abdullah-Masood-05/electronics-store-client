@@ -34,8 +34,7 @@ Next.js 16, React 19, Ant Design 6, Firebase 12, Axios, and the Context API for 
 
 ### Prerequisites
 
-- Node.js 18+
-- npm 9+
+- Bun 1.0+
 - A Firebase project set up with Email/Password auth
 - The backend API running (or a URL to one)
 
@@ -44,7 +43,7 @@ Next.js 16, React 19, Ant Design 6, Firebase 12, Axios, and the Context API for 
 ```bash
 git clone https://github.com/your-username/electronics-store-client.git
 cd electronics-store-client
-npm install
+bun install
 ```
 
 Create a `.env.local` file:
@@ -60,7 +59,7 @@ NEXT_PUBLIC_API_URL=http://localhost:8000/api
 ### Run It
 
 ```bash
-npm run dev
+bun run dev
 ```
 
 Open `http://localhost:3000` and you're good to go.
@@ -95,9 +94,9 @@ No `localStorage` for tokens — they live in memory only to avoid XSS vulnerabi
 ## Commands
 
 ```bash
-npm run dev      # Dev server
-npm run build    # Build for production
-npm start        # Run production build
+bun run dev      # Dev server
+bun run build    # Build for production
+bun start        # Run production build
 ```
 
 ## Notes
