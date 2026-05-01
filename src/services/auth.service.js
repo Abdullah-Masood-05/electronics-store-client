@@ -3,8 +3,8 @@ import api from "../lib/axios";
 /**
  * Fetch the current authenticated user's profile from the backend.
  */
-export const fetchCurrentUser = async () => {
-  const response = await api.get("/auth/me");
+export const fetchCurrentUser = async (config = {}) => {
+  const response = await api.get("/auth/me", config);
   return response.data;
 };
 

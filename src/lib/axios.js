@@ -4,6 +4,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
 const api = axios.create({
   baseURL: API_URL,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
@@ -48,7 +49,16 @@ export const setLogoutCallback = (callback) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const originalRequest = error.config;
+    
+    // If it's a 401 and NOT from the logout or session endpoint itself, trigger logout
+    if (
+      error.response?.status === 401 && 
+      originalRequest && 
+      !originalRequest.url.includes("/auth/logout") &&
+      !originalRequest.url.includes("/auth/session") &&
+      !originalRequest.skipAuthLogout
+    ) {
       clearAxiosToken();
       if (logoutCallback) {
         logoutCallback();
