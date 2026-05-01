@@ -364,8 +364,7 @@
 }
 
 @media (min-width: 901px) {
-  .filter-sidebar { display: none; }
-  .filter-sidebar.open { display: block; }
+  .filter-sidebar { display: block; }
 }
 
 @media (max-width: 768px) {

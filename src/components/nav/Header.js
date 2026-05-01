@@ -24,6 +24,7 @@ const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [searchValue, setSearchValue] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const searchRef = useRef(null);
 
   const handleLogout = async () => {
@@ -142,6 +143,17 @@ const Header = () => {
                     <span className="nav-cart-badge">{cartCount}</span>
                   )}
                 </button>
+
+                {/* Mobile Toggle */}
+                <button className="nav-action-btn mobile-only" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    {mobileMenuOpen ? (
+                      <path d="M18 6L6 18M6 6l12 12" />
+                    ) : (
+                      <path d="M3 12h18M3 6h18M3 18h18" />
+                    )}
+                  </svg>
+                </button>
               </>
             ) : (
               <div className="nav-auth">
@@ -155,13 +167,14 @@ const Header = () => {
 
       {/* Row 2: Category Nav */}
       {isAuthenticated && (
-        <nav className="nav-categories">
+        <nav className={`nav-categories ${mobileMenuOpen ? "open" : ""}`}>
           <div className="nav-categories-inner container">
             {categoryNav.map((item) => (
               <Link
                 key={item.label}
                 href={item.href}
-                className={`nav-cat-link ${pathname === item.href || (item.href.includes("category=") && pathname.includes("/products")) ? "" : ""}`}
+                className="nav-cat-link"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 {item.label}
               </Link>

@@ -286,3 +286,23 @@ button {
 .ant-table {
   background: transparent !important;
 }
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 768px) {
+  :root {
+    --fs-xs: 10px;
+    --fs-sm: 12px;
+    --fs-base: 14px;
+    --fs-md: 16px;
+    --fs-lg: 18px;
+    --fs-xl: 22px;
+    --fs-2xl: 32px;
+    --fs-3xl: 40px;
+  }
+  .container {
+    padding: 0 var(--s-16);
+  }
+  .section {
+    padding: var(--s-32) 0;
+  }
+}

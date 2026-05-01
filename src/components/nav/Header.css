@@ -201,9 +201,48 @@
 }
 
 /* --- Responsive --- */
+.mobile-only {
+  display: none;
+}
+
 @media (max-width: 768px) {
-  .nav-logo-text { display: none; }
-  .nav-search { max-width: 100%; }
-  .nav-categories-inner { gap: var(--s-16); overflow-x: auto; justify-content: flex-start; }
-  .nav-cat-link { font-size: 12px; }
+  .nav-main { height: auto; padding: var(--s-12) 0; }
+  .nav-main-inner { flex-wrap: wrap; gap: var(--s-12); justify-content: space-between; }
+  .nav-logo-text { display: block; font-size: 18px; }
+  .nav-search { order: 3; flex: 1 1 100%; max-width: 100%; margin-top: var(--s-4); }
+  .nav-actions { margin-left: 0; }
+  
+  .mobile-only {
+    display: flex;
+  }
+  
+  .nav-categories {
+    display: none;
+    height: auto;
+    border-top: 1px solid var(--border);
+    padding: var(--s-16) var(--s-24);
+  }
+  
+  .nav-categories.open {
+    display: block;
+  }
+  
+  .nav-categories-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--s-16);
+  }
+  
+  .nav-cat-link {
+    font-size: var(--fs-base);
+    width: 100%;
+    padding: var(--s-8) 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-cat-link:last-child {
+    border-bottom: none;
+  }
+  .nav-cat-link.active::after {
+    display: none;
+  }
 }

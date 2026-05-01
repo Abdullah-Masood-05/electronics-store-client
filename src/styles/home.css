@@ -247,15 +247,18 @@
   .hero-heading { font-size: var(--fs-2xl); }
   .hero-visual { width: 280px; height: 200px; }
   .hero-device { font-size: 100px; }
-  .hero-actions { justify-content: center; }
+  .hero-actions { justify-content: center; flex-wrap: wrap; }
   .hero-sub { margin: 0 auto var(--s-24); }
   .product-grid, .product-grid--4 { grid-template-columns: repeat(2, 1fr); }
   .cat-grid { grid-template-columns: repeat(3, 1fr); }
   .deals-row { grid-template-columns: 1fr; }
+  .deal-card { flex-direction: column-reverse; text-align: center; padding: var(--s-24); gap: var(--s-16); }
   .trust-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 480px) {
   .product-grid, .product-grid--4 { grid-template-columns: repeat(2, 1fr); gap: var(--s-8); }
   .cat-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero-actions { flex-direction: column; width: 100%; }
+  .hero-actions .btn { width: 100%; }
 }
