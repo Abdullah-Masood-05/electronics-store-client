@@ -12,7 +12,7 @@ import { getTrendingProducts, trackProductClick, searchProducts } from "../servi
 import "../styles/home.css";
 
 const categoryIcons = {
-  laptops: "💻", mobiles: "📱", phones: "📱", audio: "🎧",
+  laptops: "💻", phones: "📱", audio: "🎧",
   wearables: "⌚", gaming: "🎮", monitors: "🖥️", tablets: "📱",
   accessories: "🔌", cameras: "📷", default: "📦",
 };
