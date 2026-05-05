@@ -22,7 +22,11 @@ Started as a practical project to build a real e-commerce experience without the
 
 - **Auth** — Firebase email/password login and registration. Sessions persist across page reloads.
 - **Browse products** — Categories, subcategories, individual product pages with details.
-- **Admin section** — Manage products, categories, and deals if you're authorized.
+- **Shopping cart** — Add items to cart, manage quantities, checkout flow.
+- **Wishlist** — Save products for later, manage your wishlist.
+- **Orders** — View order history, track order details, status updates.
+- **Admin section** — Manage products, categories, deals, and orders if you're authorized.
+- **Enhanced dashboard** — Admin dashboard with better UI/UX for managing store operations.
 - **Responsive** — Built with Ant Design, works on desktop and mobile.
 - **Protected routes** — Unauthorized users get redirected to login. Admin pages are actually locked down.
 
@@ -72,13 +76,18 @@ src/
 │   ├── login/
 │   ├── register/
 │   ├── admin/        # Protected admin routes
+│   ├── cart/
+│   ├── checkout/
+│   ├── orders/       # Order history and details
+│   ├── wishlist/     # Wishlist management
 │   └── products/
 ├── components/       # Reusable React components
-├── context/          # AuthContext for auth state
+├── context/          # AuthContext, CartContext, WishlistContext
 ├── hooks/            # useAuth() hook
 ├── lib/              # Firebase and Axios setup
-├── services/         # API calls
-└── utils/            # Helpers
+├── services/         # API calls and service integrations
+├── styles/           # Component and page styles
+└── utils/            # Helpers and utilities
 ```
 
 ## How It Works
