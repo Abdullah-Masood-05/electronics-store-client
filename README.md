@@ -6,6 +6,7 @@
   <img src="https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=white" alt="React 19" />
   <img src="https://img.shields.io/badge/Ant%20Design-6-0170FE?style=flat-square&logo=antdesign&logoColor=white" alt="Ant Design 6" />
   <img src="https://img.shields.io/badge/Firebase-12-FFCA28?style=flat-square&logo=firebase&logoColor=black" alt="Firebase 12" />
+  <img src="https://img.shields.io/badge/Stripe-API-635BFF?style=flat-square&logo=stripe&logoColor=white" alt="Stripe" />
   <img src="https://img.shields.io/badge/Axios-1-5A29E4?style=flat-square&logo=axios&logoColor=white" alt="Axios" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT License" />
 </p>
@@ -16,7 +17,7 @@ Frontend for an electronics store. Browse products, manage your account, and han
 
 ## Why This Exists
 
-Started as a practical project to build a real e-commerce experience without the headache of payment processing or overly complex backend infrastructure. The goal was simple: authentication that actually works, a clean product browsing experience, and a proper admin section — all tied together with a REST API backend.
+Started as a practical project to build a real e-commerce experience with proper payment processing, authentication, and a clean admin interface. The goal was simple: a fully functional e-commerce platform with secure authentication, a clean product browsing experience, shopping cart and wishlist management, and a proper admin section — all tied together with a REST API backend.
 
 ## Features
 
@@ -32,7 +33,7 @@ Started as a practical project to build a real e-commerce experience without the
 
 ## Tech Stack
 
-Next.js 16, React 19, Ant Design 6, Firebase 12, Axios, and the Context API for state management.
+Next.js 16, React 19, Ant Design 6, Firebase 12, Stripe, Axios, and the Context API for state management.
 
 ## Getting Started
 
