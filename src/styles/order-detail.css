@@ -1,0 +1,343 @@
+/* =========================================================
+   Order Detail Page — order-detail.css
+   ========================================================= */
+
+.od-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+/* Header */
+.od-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.od-back-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-secondary, #999);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+.od-back-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.od-header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.od-id {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-primary, #2997ff);
+  letter-spacing: 0.05em;
+}
+
+.od-date {
+  font-size: 13px;
+  color: var(--text-secondary, #888);
+}
+
+/* Cards */
+.od-timeline-card,
+.od-products-card,
+.od-summary-card,
+.od-info-card {
+  background: #151515;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.od-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary, #888);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 20px;
+}
+
+/* Timeline */
+.od-timeline {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.od-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 80px;
+  position: relative;
+}
+
+.od-step-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s;
+}
+
+.od-step.completed .od-step-icon {
+  background: rgba(81, 207, 102, 0.15);
+  border-color: #51cf66;
+}
+
+.od-step.active .od-step-icon {
+  background: rgba(41, 151, 255, 0.15);
+  border-color: var(--accent-primary, #2997ff);
+  box-shadow: 0 0 16px rgba(41, 151, 255, 0.3);
+}
+
+.od-step-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: block;
+}
+
+.od-step-label {
+  font-size: 11px;
+  color: var(--text-secondary, #666);
+  text-align: center;
+  margin-top: 8px;
+  white-space: nowrap;
+}
+
+.od-step.active .od-step-label {
+  color: var(--accent-primary, #2997ff);
+  font-weight: 600;
+}
+
+.od-step.completed .od-step-label {
+  color: #51cf66;
+}
+
+.od-step-line {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  z-index: 0;
+}
+
+.od-step-line.filled {
+  background: #51cf66;
+}
+
+.od-cancelled-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 73, 73, 0.1);
+  border: 1px solid rgba(255, 73, 73, 0.3);
+  color: #ff6b6b;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* Grid layout */
+.od-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .od-grid {
+    grid-template-columns: 1fr;
+  }
+  .od-sidebar {
+    order: -1;
+  }
+}
+
+/* Product rows */
+.od-product-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.od-product-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.od-product-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.od-product-img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #1a1a1a;
+  flex-shrink: 0;
+}
+
+.od-product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.od-product-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  line-height: 1.4;
+}
+
+.od-product-name:hover {
+  color: var(--accent-primary, #2997ff);
+}
+
+.od-product-brand {
+  font-size: 12px;
+  color: var(--text-secondary, #888);
+}
+
+.od-product-qty {
+  font-size: 12px;
+  color: var(--text-secondary, #888);
+}
+
+.od-product-price {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* Summary */
+.od-summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--text-secondary, #888);
+  margin-bottom: 12px;
+}
+
+.od-discount {
+  color: #51cf66;
+}
+
+.od-free {
+  color: #51cf66;
+}
+
+.od-summary-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.07);
+  margin: 12px 0;
+}
+
+.od-total {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Info card */
+.od-info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.od-info-label {
+  color: var(--text-secondary, #888);
+}
+
+.od-info-value {
+  color: #fff;
+  font-weight: 500;
+  text-align: right;
+}
+
+.od-mono {
+  font-family: monospace;
+  letter-spacing: 0.03em;
+}
+
+.od-address {
+  font-style: normal;
+  font-size: 14px;
+  color: #ccc;
+  line-height: 1.8;
+}
+
+/* Loading & error */
+.od-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 16px;
+  color: var(--text-secondary, #888);
+}
+
+.od-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--accent-primary, #2997ff);
+  border-radius: 50%;
+  animation: od-spin 0.8s linear infinite;
+}
+
+@keyframes od-spin {
+  to { transform: rotate(360deg); }
+}
+
+.od-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 60px;
+  color: var(--text-secondary, #888);
+}
