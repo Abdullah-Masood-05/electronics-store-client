@@ -3,6 +3,7 @@
 import { ConfigProvider, theme, App } from "antd";
 import { AuthProvider } from "../context/AuthContext";
 import { CartProvider } from "../context/CartContext";
+import { WishlistProvider } from "../context/WishlistContext";
 import Header from "../components/nav/Header";
 
 const darkTheme = {
@@ -32,8 +33,10 @@ export default function ClientProviders({ children }) {
       <App>
         <AuthProvider>
           <CartProvider>
-            <Header />
-            <main className="app-content">{children}</main>
+            <WishlistProvider>
+              <Header />
+              <main className="app-content">{children}</main>
+            </WishlistProvider>
           </CartProvider>
         </AuthProvider>
       </App>

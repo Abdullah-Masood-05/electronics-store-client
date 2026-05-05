@@ -7,6 +7,7 @@ import { Dropdown } from "antd";
 import { LogoutOutlined, UserOutlined, SettingOutlined } from "@ant-design/icons";
 import useAuth from "../../hooks/useAuth";
 import useCart from "../../context/CartContext";
+import { useWishlist } from "../../context/WishlistContext";
 import "./Header.css";
 
 const categoryNav = [
@@ -21,6 +22,7 @@ const categoryNav = [
 const Header = () => {
   const { isAuthenticated, backendUser, logout, loading } = useAuth();
   const { cartCount } = useCart();
+  const { wishlistIds } = useWishlist();
   const router = useRouter();
   const pathname = usePathname();
   const [searchValue, setSearchValue] = useState("");
@@ -70,6 +72,12 @@ const Header = () => {
       icon: <UserOutlined />,
       label: "My Orders",
       onClick: () => router.push("/orders"),
+    },
+    {
+      key: "wishlist",
+      icon: <span style={{ fontSize: 14 }}>🤍</span>,
+      label: wishlistIds.size > 0 ? `Wishlist (${wishlistIds.size})` : "Wishlist",
+      onClick: () => router.push("/wishlist"),
     },
     { type: "divider" },
     {
@@ -130,6 +138,9 @@ const Header = () => {
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                     <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
                   </svg>
+                  {wishlistIds.size > 0 && (
+                    <span className="nav-cart-badge" style={{ background: "#ff6b6b" }}>{wishlistIds.size}</span>
+                  )}
                 </button>
 
                 {/* Cart */}

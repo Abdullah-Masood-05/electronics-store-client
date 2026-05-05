@@ -5,11 +5,12 @@ import Link from "next/link";
 import { StarFilled, HeartOutlined, HeartFilled } from "@ant-design/icons";
 import { trackProductClick } from "../services/product.service";
 import useCart from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
 import "./ProductCard.css";
 
 const ProductCard = ({ product }) => {
-  const [wishlisted, setWishlisted] = useState(false);
   const { addToCart } = useCart();
+  const { isWishlisted, toggleWishlist } = useWishlist();
 
   const avgRating =
     product.ratings?.length > 0
@@ -32,7 +33,7 @@ const ProductCard = ({ product }) => {
   const handleWishlist = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setWishlisted(!wishlisted);
+    toggleWishlist(product._id);
   };
 
   const discount = product.oldPrice
@@ -58,7 +59,7 @@ const ProductCard = ({ product }) => {
 
           {/* Wishlist */}
           <button className="pc-wish" onClick={handleWishlist} title="Wishlist">
-            {wishlisted ? (
+            {isWishlisted(product._id) ? (
               <HeartFilled style={{ color: "var(--red)" }} />
             ) : (
               <HeartOutlined />
